@@ -44,7 +44,7 @@ Read [references/cli.md](references/cli.md) when exact flags, output fields, or 
 
    `open-video search <index> "<subtitle query>" --visual-query "<English visual description>" --mode hybrid --top 10 --json`
 
-5. Group hits whose timestamps fall within 15 seconds of one another. Prefer a group only when every required anchor is supported by a hit or is directly visible in its context frames; a high score for one anchor does not satisfy the others.
+5. Group hits whose timestamps fall within 12 seconds of one another so one default context window can cover every anchor. Prefer a group only when every required anchor is supported by a hit or is directly visible in its context frames; a high score for one anchor does not satisfy the others.
 6. Call `open-video context <index> --at <timestamp_ms> --before 6s --after 6s --frames 5 --json` for at most three overlapping groups, then open the returned frames.
 7. If no group satisfies all required anchors, state which condition was found and which was not. Do not drift to a generic scene that contains only the requested person, object, or attribute.
 8. Stop after three search rounds or 20 unique opened images. Report that evidence is insufficient instead of searching indefinitely.

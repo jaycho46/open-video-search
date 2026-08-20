@@ -27,7 +27,9 @@
     "eval": "node eval/run.mjs",
     "open-video": "node packages/cli/dist/cli.js",
     "skill:validate": "python3 scripts/validate-skill.py skills/watch",
-    "test": "pnpm engine:test && pnpm --filter open-video test",
+    "test": "pnpm engine:test && pnpm --filter open-video test && pnpm test:watch",
+    "test:watch": "node --test test/watch/compositional-evidence.test.mjs",
+    "test:watch:live": "node test/watch/live.mjs",
     "typecheck": "pnpm --filter open-video typecheck"
   }
 }
