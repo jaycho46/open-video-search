@@ -40,11 +40,21 @@ for (const behaviorCase of WATCH_BEHAVIOR_CASES) {
   const groups = completeEvidenceGroups(anchors);
   const grounded = groups.find((group) => overlapsInterval(group, behaviorCase.ground_truth_ms));
   assert.ok(grounded, `${behaviorCase.id}: no complete group overlaps the labeled interval`);
+  const composed = runCli(behaviorCase.composed_args);
+  assert.equal(composed.window_ms, 12_000, `${behaviorCase.id}: unexpected compositional window`);
+  assert.equal(composed.require_all, true, `${behaviorCase.id}: all constraints must be required`);
+  const composedGrounded = composed.hits.find((hit) => overlapsInterval(hit, behaviorCase.ground_truth_ms));
+  assert.ok(composedGrounded, `${behaviorCase.id}: CLI returned no constrained window in the labeled interval`);
+  assert.deepEqual(
+    composedGrounded.matched_constraints,
+    behaviorCase.composed_constraints,
+    `${behaviorCase.id}: constrained window did not cover every logical condition`,
+  );
   const context = runCli([
     "context",
     behaviorCase.video_id,
     "--at",
-    String(grounded.timestamp_ms),
+    String(composedGrounded.timestamp_ms),
     "--before",
     "6s",
     "--after",
@@ -53,8 +63,8 @@ for (const behaviorCase of WATCH_BEHAVIOR_CASES) {
     "5",
     "--json",
   ]);
-  assert.ok(context.start_ms <= grounded.start_ms, `${behaviorCase.id}: context misses the first anchor`);
-  assert.ok(context.end_ms >= grounded.end_ms, `${behaviorCase.id}: context misses the last anchor`);
+  assert.ok(context.start_ms <= composedGrounded.start_ms, `${behaviorCase.id}: context misses the first anchor`);
+  assert.ok(context.end_ms >= composedGrounded.end_ms, `${behaviorCase.id}: context misses the last anchor`);
   assert.equal(context.frames.length, 5, `${behaviorCase.id}: context did not return five frames`);
   const reviewed = verifiedEvidenceGroups(anchors).filter((group) =>
     overlapsInterval(group, behaviorCase.ground_truth_ms),
@@ -74,9 +84,16 @@ for (const behaviorCase of WATCH_BEHAVIOR_CASES) {
       false,
       `${behaviorCase.id}: selected the attribute-only fallback scene`,
     );
+    assert.equal(
+      composed.hits.some(
+        (hit) => hit.start_ms <= behaviorCase.reject_timestamp_ms && hit.end_ms >= behaviorCase.reject_timestamp_ms,
+      ),
+      false,
+      `${behaviorCase.id}: CLI selected the attribute-only fallback scene`,
+    );
   }
   const result = behaviorCase.expected_outcome === "match" ? "verified-match" : "insufficient-after-frame-review";
   process.stdout.write(
-    `PASS ${behaviorCase.id} ${grounded.start_ms}-${grounded.end_ms} ${result} constraints=${grounded.matched_constraints.join(",")}\n`,
+    `PASS ${behaviorCase.id} ${composedGrounded.start_ms}-${composedGrounded.end_ms} ${result} constraints=${composedGrounded.matched_constraints.join(",")}\n`,
   );
 }

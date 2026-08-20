@@ -68,10 +68,17 @@ export const TimelineEntrySchema = z.object({
   frames: z.array(TimelineFrameSchema),
 });
 
+export const SearchConstraintSchema = z.object({
+  id: z.string(),
+  modality: z.enum(["visual", "text"]),
+  query: z.string(),
+});
+
 export const SearchHitSchema = z.object({
   rank: z.int().positive(),
   score: z.number(),
   match: z.array(z.enum(["visual", "text"])),
+  matched_constraints: z.array(z.string()).default([]),
   start_ms: z.int().nonnegative(),
   end_ms: z.int().positive(),
   timestamp_ms: z.int().nonnegative(),
@@ -90,6 +97,9 @@ export const SearchResponseSchema = z.object({
   query: z.string(),
   visual_query: z.string().optional(),
   mode: z.enum(["hybrid", "visual", "text"]),
+  constraints: z.array(SearchConstraintSchema).default([]),
+  window_ms: z.int().min(8_000).max(12_000).optional(),
+  require_all: z.boolean().default(false),
   hits: z.array(SearchHitSchema),
 });
 
@@ -170,4 +180,3 @@ export type ContextResponse = z.infer<typeof ContextResponseSchema>;
 export type TimelineResponse = z.infer<typeof TimelineResponseSchema>;
 export type IndexResponse = z.infer<typeof IndexResponseSchema>;
 export type DoctorResponse = z.infer<typeof DoctorResponseSchema>;
-

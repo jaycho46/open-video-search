@@ -20,6 +20,7 @@ export function printResult(value: unknown, json: boolean): void {
           time: formatTimestamp(Number(item.timestamp_ms)),
           score: Number(item.score).toFixed(5),
           match: Array.isArray(item.match) ? item.match.join("+") : "",
+          constraints: Array.isArray(item.matched_constraints) ? item.matched_constraints.join("+") : "",
           subtitle: item.subtitle,
           frame: Array.isArray(item.frames) ? (item.frames[0] as Record<string, unknown> | undefined)?.path : "",
         };
@@ -48,4 +49,3 @@ export function printResult(value: unknown, json: boolean): void {
   }
   process.stdout.write(`${inspect(value, { colors: process.stdout.isTTY, depth: 6, compact: false })}\n`);
 }
-

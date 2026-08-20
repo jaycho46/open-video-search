@@ -95,9 +95,24 @@ describe("local video integration", () => {
     expect(visual.hits[0]?.start_ms).toBe(4_000);
     expect(visual.hits[0]?.timestamp_ms).toBe(4_000);
     expect(visual.hits[0]?.frames[0]?.path).toMatch(/^\//u);
+    expect(visual.hits[0]?.matched_constraints).toEqual(["query"]);
 
     const text = await searchIndex(indexDirectory, "blue car", { mode: "text", top: 3 });
     expect(text.hits[0]?.start_ms).toBe(4_000);
+
+    const compositional = await searchIndex(indexDirectory, "blue car", {
+      mode: "text",
+      top: 3,
+      constraints: [{ id: "setting", modality: "text", query: "red room" }],
+      windowMS: 8_000,
+      requireAll: true,
+    });
+    expect(compositional.window_ms).toBe(8_000);
+    expect(compositional.hits[0]).toMatchObject({
+      start_ms: 0,
+      end_ms: 6_000,
+      matched_constraints: ["query", "setting"],
+    });
 
     const timeline = await getTimeline(indexDirectory, 2_000, undefined, 2);
     expect(timeline.items).toHaveLength(2);

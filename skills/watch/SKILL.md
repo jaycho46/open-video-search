@@ -36,18 +36,19 @@ Read [references/cli.md](references/cli.md) when exact flags, output fields, or 
 1. Decide whether the question has one retrieval condition or several required conditions. Words such as "while", "when", "wearing", and "driving" usually combine an event, a subject, and an attribute.
 2. For one condition, derive the original-language subtitle query and a concise English visual description. CLIP is English-centered, so translate or expand visual wording rather than translating quoted speech.
 3. For several required conditions, split them into at most three independent anchors:
-   - event or action, such as eating fried seafood;
-   - subject or object, such as a woman at the table;
-   - attribute, such as dark oval sunglasses.
+   - event or action, such as opening a package;
+   - subject or object, such as a person at a counter;
+   - attribute, such as a red backpack.
    Treat a user-provided person's name as context, not as permission to perform face recognition.
-4. Search each anchor independently instead of putting every concept into one long CLIP prompt. Use original-language variants for subtitle anchors and one short English description for each visual anchor. A typical first search is:
+4. Give each required concept a short lowercase constraint ID. Use original-language variants for subtitle constraints and short English descriptions for visual constraints. Reuse an ID when text and visual queries are alternative evidence for the same logical condition. Do not put every concept into one long CLIP prompt.
+5. Run one constrained search with an 8–12 second evidence window. The positional query and `--visual-query` form the `query` condition; named flags add other conditions. For example:
 
-   `open-video search <index> "<subtitle query>" --visual-query "<English visual description>" --mode hybrid --top 10 --json`
+   `open-video search <index> "상자를 연다" --visual-query "person opening a cardboard box" --text-constraint "location=창고" --visual-constraint "location=inside a warehouse" --visual-constraint "object=red backpack" --window 12s --require-all --top 10 --json`
 
-5. Group hits whose timestamps fall within 12 seconds of one another so one default context window can cover every anchor. Prefer a group only when every required anchor is supported by a hit or is directly visible in its context frames; a high score for one anchor does not satisfy the others.
-6. Call `open-video context <index> --at <timestamp_ms> --before 6s --after 6s --frames 5 --json` for at most three overlapping groups, then open the returned frames.
-7. If no group satisfies all required anchors, state which condition was found and which was not. Do not drift to a generic scene that contains only the requested person, object, or attribute.
-8. Stop after three search rounds or 20 unique opened images. Report that evidence is insufficient instead of searching indefinitely.
+6. Treat `matched_constraints` as retrieval metadata, not proof that the depicted facts are true. Call `open-video context <index> --at <timestamp_ms> --before 6s --after 6s --frames 5 --json` for at most three returned windows, then open the returned frames and verify every condition yourself.
+7. If the constrained search is empty, search individual anchors or rerun once without `--require-all` to learn which condition is missing. Do not combine hits more than 12 seconds apart.
+8. If no reviewed window satisfies all required anchors, state which condition was found and which was not. Do not drift to a generic scene that contains only the requested person, object, or attribute.
+9. Stop after three search rounds or 20 unique opened images. Report that evidence is insufficient instead of searching indefinitely.
 
 ### Brand, model, year, and price questions
 

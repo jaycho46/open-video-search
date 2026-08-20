@@ -479,6 +479,43 @@
             "text"
           ]
         },
+        "constraints": {
+          "default": [],
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "modality": {
+                "type": "string",
+                "enum": [
+                  "visual",
+                  "text"
+                ]
+              },
+              "query": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "modality",
+              "query"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "window_ms": {
+          "type": "integer",
+          "minimum": 8000,
+          "maximum": 12000
+        },
+        "require_all": {
+          "default": false,
+          "type": "boolean"
+        },
         "hits": {
           "type": "array",
           "items": {
@@ -500,6 +537,13 @@
                     "visual",
                     "text"
                   ]
+                }
+              },
+              "matched_constraints": {
+                "default": [],
+                "type": "array",
+                "items": {
+                  "type": "string"
                 }
               },
               "start_ms": {
@@ -560,6 +604,7 @@
               "rank",
               "score",
               "match",
+              "matched_constraints",
               "start_ms",
               "end_ms",
               "timestamp_ms",
@@ -575,6 +620,8 @@
         "video_id",
         "query",
         "mode",
+        "constraints",
+        "require_all",
         "hits"
       ],
       "additionalProperties": false

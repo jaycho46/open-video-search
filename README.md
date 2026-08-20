@@ -65,6 +65,14 @@ open-video search youtube-VIDEO_ID "흰 옷" \
   --visual-query "woman wearing a white dress" \
   --mode hybrid --top 10 --json
 
+# Require several independently retrieved conditions in one 8–12 second window.
+open-video search youtube-VIDEO_ID "상자를 연다" \
+  --visual-query "person opening a cardboard box" \
+  --text-constraint "location=창고" \
+  --visual-constraint "location=inside a warehouse" \
+  --visual-constraint "object=red backpack" \
+  --window 12s --require-all --top 10 --json
+
 # Expand one candidate into evenly spaced original-media frames plus full local subtitles.
 open-video context youtube-VIDEO_ID --at 00:13:24.500 --before 6s --after 6s --frames 5 --json
 
@@ -93,7 +101,7 @@ The skill requires the host to open returned frames before answering, label unce
 3. Combine two-second uniform samples with FFmpeg scene candidates above `0.4`.
 4. Save long-edge-768 JPEGs and drop adjacent perceptual duplicates while keeping timeline gaps at four seconds or less.
 5. Embed frames with pinned quantized CLIP; normalize subtitle text and add word plus CJK two/three-character tokens to MiniSearch.
-6. Fuse the top 50 visual and text ranks with weighted RRF (`0.7` visual, `0.3` text).
+6. Fuse the top 50 visual and text ranks with weighted RRF (`0.7` visual, `0.3` text); optional logical constraints aggregate independent ranks inside a generic 8–12 second window.
 7. Build the complete index in a sibling temporary directory and atomically replace only after validation.
 
 ## Privacy, access, and limits

@@ -108,3 +108,6 @@ export const TIMELINE_SEGMENT_MS = 2_000;
 export const RRF_K = 60;
 export const VISUAL_WEIGHT = 0.7;
 export const TEXT_WEIGHT = 0.3;
+export const MIN_SEARCH_WINDOW_MS = 8_000;
+export const MAX_SEARCH_WINDOW_MS = 12_000;
+export const DEFAULT_SEARCH_WINDOW_MS = 12_000;

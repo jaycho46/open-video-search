@@ -7,6 +7,14 @@ export const WATCH_BEHAVIOR_CASES = [
     ground_truth_ms: [500_000, 524_000],
     expected_outcome: "match",
     review_note: "The frame at 518000ms visibly shows the Zass information card.",
+    composed_constraints: ["query", "event", "name-card"],
+    composed_args: [
+      "search", "youtube-Djiel71Ioic", "포지타노 레스토랑 식당",
+      "--visual-query", "restaurant visit on a Positano terrace",
+      "--text-constraint", "event=포지타노 레스토랑 식당",
+      "--visual-constraint", "name-card=restaurant information card showing its name at a luxury hotel terrace",
+      "--window", "12s", "--require-all", "--top", "10", "--json",
+    ],
     anchors: [
       {
         id: "restaurant-event",
@@ -48,6 +56,14 @@ export const WATCH_BEHAVIOR_CASES = [
     reject_timestamp_ms: 152_000,
     expected_outcome: "insufficient",
     review_note: "Frames at 740000ms and 742116ms show a white cap and no sunglasses.",
+    composed_constraints: ["query", "event", "eyewear"],
+    composed_args: [
+      "search", "youtube-JS87kxzpHzg", "오징어 튀김",
+      "--visual-query", "woman eating fried seafood at a restaurant",
+      "--text-constraint", "event=오징어 튀김",
+      "--visual-constraint", "eyewear=woman wearing dark narrow oval sunglasses at a restaurant",
+      "--window", "12s", "--require-all", "--top", "10", "--json",
+    ],
     anchors: [
       {
         id: "fried-food-event",

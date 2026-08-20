@@ -20,4 +20,6 @@ Regenerable implementation details:
 
 All stored public timeline and frame paths are relative to the index directory. CLI responses resolve evidence frame paths to absolute paths. All JSON time fields are integer milliseconds. A YouTube search/context response includes a `t` deep link when the source has a canonical URL.
 
+Search responses include the normalized constraint variants and every hit includes ordered `matched_constraints`. A normal search returns timeline segments. Named constraints or `window_ms` return an 8–12 second evidence window; `require_all` means every logical constraint ID has retrieval evidence inside that window. Text and visual variants sharing an ID are alternatives for coverage. These fields describe retrieval candidates only: they do not assert that a host has opened the frames or verified the depicted fact.
+
 `manifest.fingerprint` covers the source identity, CLI/indexing version, language and explicit subtitle checksum, ASR choice, complete pinned model fingerprints, and sampling configuration. A complete matching index is reused; a mismatch is built in a sibling temporary directory and atomically replaces the old index only after validation.

@@ -2,6 +2,7 @@ import { Command, CommanderError, Option } from "commander";
 
 import { CLI_VERSION } from "./constants.js";
 import { listCache, pruneCache, removeCache } from "./cache.js";
+import { parseSearchConstraint } from "./compositional-search.js";
 import { getContext } from "./context.js";
 import { doctor } from "./doctor.js";
 import { OpenVideoError } from "./errors.js";
@@ -25,6 +26,10 @@ function boundedInteger(value: string, minimum: number, maximum: number, name: s
     throw new OpenVideoError("usage", `${name} must be between ${minimum} and ${maximum}.`);
   }
   return parsed;
+}
+
+function collect(value: string, previous: string[]): string[] {
+  return [...previous, value];
 }
 
 function progress(stage: string, message: string): void {
@@ -102,6 +107,10 @@ export async function runCli(argv = process.argv): Promise<void> {
     .argument("<video-id|index-directory>")
     .argument("<text-query>")
     .option("--visual-query <english-visual-query>", "English CLIP query, especially useful for non-English questions")
+    .option("--text-constraint <id=query>", "repeatable subtitle constraint for one temporal window", collect, [])
+    .option("--visual-constraint <id=query>", "repeatable English visual constraint for one temporal window", collect, [])
+    .option("--window <duration>", "compositional evidence window from 8s through 12s")
+    .option("--require-all", "return only windows matching every logical constraint", false)
     .addOption(new Option("--mode <mode>").choices(["hybrid", "visual", "text"]).default("hybrid"))
     .option("--top <count>", "maximum result count", (value) => boundedInteger(value, 1, 50, "top"), 10)
     .option("--json", "emit stable JSON", false)
@@ -111,11 +120,29 @@ export async function runCli(argv = process.argv): Promise<void> {
         query: string,
         options: {
           visualQuery?: string;
+          textConstraint: string[];
+          visualConstraint: string[];
+          window?: string;
+          requireAll: boolean;
           mode: "hybrid" | "visual" | "text";
           top: number;
           json: boolean;
         },
-      ) => printResult(await searchIndex(reference, query, options), options.json),
+      ) => {
+        const constraints = [
+          ...options.textConstraint.map((value) => parseSearchConstraint(value, "text")),
+          ...options.visualConstraint.map((value) => parseSearchConstraint(value, "visual")),
+        ];
+        const result = await searchIndex(reference, query, {
+          visualQuery: options.visualQuery,
+          mode: options.mode,
+          top: options.top,
+          constraints,
+          windowMS: options.window === undefined ? undefined : parseMilliseconds(options.window),
+          requireAll: options.requireAll,
+        });
+        printResult(result, options.json);
+      },
     );
 
   program
