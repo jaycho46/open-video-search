@@ -21,10 +21,12 @@
   },
   "scripts": {
     "build": "pnpm engine:build && pnpm --filter open-video build",
-    "check": "pnpm typecheck && pnpm test && pnpm skill:validate",
+    "check": "pnpm typecheck && pnpm test && pnpm skill:validate && pnpm eval:validate",
     "engine:build": "node packages/cli/scripts/build-engine.mjs",
     "engine:test": "cd engine && go test ./...",
     "eval": "node eval/run.mjs",
+    "eval:prepare": "node eval/corpus-v1/prepare.mjs",
+    "eval:validate": "node eval/validate-corpus.mjs eval/corpus-v1/corpus.json",
     "open-video": "node packages/cli/dist/cli.js",
     "skill:validate": "python3 scripts/validate-skill.py skills/watch",
     "test": "pnpm engine:test && pnpm --filter open-video test && pnpm test:watch",

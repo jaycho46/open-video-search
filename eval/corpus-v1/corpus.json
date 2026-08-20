@@ -1,0 +1,389 @@
+{
+  "schema_version": "open-video/eval-corpus/v1",
+  "corpus_id": "open-video-diverse-moments-v1",
+  "frozen_at": "2026-08-20",
+  "annotation_license": "CC0-1.0",
+  "label_fingerprint": "485886a4ee5f5d2990e08e0f1251134acc7e1dcd541b78b932816a9bb4960fcc",
+  "policy": {
+    "development_videos": 8,
+    "holdout_videos": 4,
+    "queries_per_video": 5,
+    "excluded_source_tokens": ["Djiel71Ioic", "JS87kxzpHzg"],
+    "holdout_rule": "Do not tune prompts, weights, windows, models, or ranking logic from holdout results. Run holdout only for a release candidate and report aggregate metrics."
+  },
+  "videos": [
+    {
+      "id": "bart-train-arrival",
+      "split": "development",
+      "filename": "bart-train.webm",
+      "duration_ms": 33765,
+      "source": {
+        "page_url": "https://commons.wikimedia.org/wiki/File:BART_train_arriving_at_Powell_station.webm",
+        "download_url": "https://upload.wikimedia.org/wikipedia/commons/e/e0/BART_train_arriving_at_Powell_station.webm",
+        "sha256": "2f9f00de7c3cb15894a45706a38941ae7feb2ef3bee08dc96817e4eda7c5a952",
+        "bytes": 6134552,
+        "license": "CC BY-SA 4.0",
+        "license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+        "attribution": "Evan0512"
+      },
+      "annotation": { "method": "manual contact-sheet review at 1-3 second intervals", "reviewed_at": "2026-08-20" },
+      "captions": [
+        { "start_ms": 0, "end_ms": 4000, "text": "어두운 터널 끝에서 열차 전조등이 보인다. Train headlights appear at the end of a dark tunnel." },
+        { "start_ms": 4000, "end_ms": 9000, "text": "은색 지하철의 앞부분이 지하 승강장으로 들어온다. The front of a silver metro train enters the underground platform." },
+        { "start_ms": 9000, "end_ms": 18000, "text": "은색 열차 측면이 검은 기둥과 노란 안전선 옆을 지나간다. Silver train cars pass a black pillar and yellow safety line." },
+        { "start_ms": 18000, "end_ms": 26000, "text": "열차가 속도를 줄이고 여러 출입문이 승강장에 나란히 선다. The train slows with several doors aligned along the platform." },
+        { "start_ms": 26000, "end_ms": 33765, "text": "파란 BART 로고가 있는 객차가 멈추고 멀리 자전거가 보인다. A blue BART logo car stops with a bicycle visible in the distance." }
+      ],
+      "queries": [
+        { "id": "bart-text-headlights", "kind": "text", "query": "열차 전조등", "relevant_ranges": [{ "start_ms": 0, "end_ms": 4000 }] },
+        { "id": "bart-visual-train-front", "kind": "visual", "query": "은색 지하철의 앞부분", "visual_query": "front of a silver metro train entering an underground station", "relevant_ranges": [{ "start_ms": 4000, "end_ms": 9000 }] },
+        { "id": "bart-hybrid-pillar-line", "kind": "hybrid", "query": "검은 기둥과 노란 안전선", "visual_query": "side of a silver subway train passing a black pillar and yellow platform line", "relevant_ranges": [{ "start_ms": 9000, "end_ms": 18000 }] },
+        { "id": "bart-text-aligned-doors", "kind": "text", "query": "여러 출입문이 승강장에 나란히", "relevant_ranges": [{ "start_ms": 18000, "end_ms": 26000 }] },
+        { "id": "bart-visual-logo-bicycle", "kind": "visual", "query": "파란 BART 로고와 자전거", "visual_query": "blue BART logo on a stopped train car with a bicycle on the platform", "relevant_ranges": [{ "start_ms": 26000, "end_ms": 33765 }] }
+      ]
+    },
+    {
+      "id": "navy-basketball-game",
+      "split": "development",
+      "filename": "basketball.webm",
+      "duration_ms": 29996,
+      "source": {
+        "page_url": "https://commons.wikimedia.org/wiki/File:NSF_Diego_Garcia_hosts_basketball_game_(989713).webm",
+        "download_url": "https://upload.wikimedia.org/wikipedia/commons/e/eb/NSF_Diego_Garcia_hosts_basketball_game_%28989713%29.webm",
+        "sha256": "dbe040a751d5c50a24fb3b27bda570f2b43324281051628552034f67b6cef7a3",
+        "bytes": 9163022,
+        "license": "Public domain",
+        "license_url": "https://creativecommons.org/publicdomain/mark/1.0/",
+        "attribution": "U.S. Navy video by Seaman Latifah Choice"
+      },
+      "annotation": { "method": "manual contact-sheet review at 1-3 second intervals", "reviewed_at": "2026-08-20" },
+      "captions": [
+        { "start_ms": 0, "end_ms": 7000, "text": "선수들이 파란 관중석에 앉아 있고 한 선수가 밝은 운동화 끈을 묶는다. Players sit on blue bleachers while one ties bright sneakers." },
+        { "start_ms": 7000, "end_ms": 11000, "text": "흰 MWR 셔츠를 입은 선수가 카메라를 향해 말한다. A player in a white MWR shirt speaks to the camera." },
+        { "start_ms": 11000, "end_ms": 20000, "text": "노란색과 짙은색 유니폼 팀이 실내 코트에서 농구를 한다. Teams in yellow and dark jerseys play basketball on an indoor court." },
+        { "start_ms": 20000, "end_ms": 23500, "text": "파란 점수판에 14 대 15가 표시된다. A blue scoreboard displays 14 and 15." },
+        { "start_ms": 23500, "end_ms": 29996, "text": "경기가 끝나며 여러 선수가 코트 위에 한 줄로 모인다. Players gather in a line on the court as the game ends." }
+      ],
+      "queries": [
+        { "id": "basketball-text-shoelaces", "kind": "text", "query": "밝은 운동화 끈을 묶는다", "relevant_ranges": [{ "start_ms": 0, "end_ms": 7000 }] },
+        { "id": "basketball-visual-interview", "kind": "visual", "query": "흰 셔츠 선수 인터뷰", "visual_query": "basketball player in a white MWR shirt speaking to camera", "relevant_ranges": [{ "start_ms": 7000, "end_ms": 11000 }] },
+        { "id": "basketball-hybrid-game", "kind": "hybrid", "query": "노란색과 짙은색 유니폼 팀", "visual_query": "yellow jersey and dark jersey teams playing indoor basketball", "relevant_ranges": [{ "start_ms": 11000, "end_ms": 20000 }] },
+        { "id": "basketball-text-score", "kind": "text", "query": "점수판에 14 대 15", "relevant_ranges": [{ "start_ms": 20000, "end_ms": 23500 }] },
+        { "id": "basketball-visual-lineup", "kind": "visual", "query": "선수들이 코트에 한 줄로 모임", "visual_query": "group of basketball players standing in a line on the court", "relevant_ranges": [{ "start_ms": 23500, "end_ms": 29996 }] }
+      ]
+    },
+    {
+      "id": "pottery-wheel",
+      "split": "development",
+      "filename": "pottery.webm",
+      "duration_ms": 30788,
+      "source": {
+        "page_url": "https://commons.wikimedia.org/wiki/File:Pottery_01.webm",
+        "download_url": "https://upload.wikimedia.org/wikipedia/commons/1/1f/Pottery_01.webm",
+        "sha256": "e572629532b0ee1a7058e3198992fdbd30a3422a43913f683fd3c9cb64fe2a98",
+        "bytes": 8291592,
+        "license": "CC BY-SA 4.0",
+        "license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+        "attribution": "Ganesh Mohan T"
+      },
+      "annotation": { "method": "manual contact-sheet review at 1-3 second intervals", "reviewed_at": "2026-08-20" },
+      "captions": [
+        { "start_ms": 0, "end_ms": 6000, "text": "도공의 손이 회전판 중앙의 점토에 구멍을 낸다. The potter opens a hollow in clay at the center of the wheel." },
+        { "start_ms": 6000, "end_ms": 12000, "text": "젖은 점토 벽을 위로 끌어올려 작은 원통을 만든다. Wet clay walls are pulled upward into a small cylinder." },
+        { "start_ms": 12000, "end_ms": 18000, "text": "두 손으로 회전하는 그릇의 바깥면을 매끄럽게 다듬는다. Both hands smooth the outside of the spinning vessel." },
+        { "start_ms": 18000, "end_ms": 24000, "text": "손가락으로 작은 그릇의 둥근 테두리를 집어 정리한다. Fingers pinch and refine the round rim of the small vessel." },
+        { "start_ms": 24000, "end_ms": 30788, "text": "컵 모양으로 완성된 점토 그릇이 회전판 위에서 돈다. The finished cup-shaped clay vessel rotates on the wheel." }
+      ],
+      "queries": [
+        { "id": "pottery-text-hollow", "kind": "text", "query": "점토에 구멍을 낸다", "relevant_ranges": [{ "start_ms": 0, "end_ms": 6000 }] },
+        { "id": "pottery-visual-cylinder", "kind": "visual", "query": "점토 벽을 원통으로 올리는 손", "visual_query": "hands pulling wet clay upward into a small cylinder on a pottery wheel", "relevant_ranges": [{ "start_ms": 6000, "end_ms": 12000 }] },
+        { "id": "pottery-hybrid-smoothing", "kind": "hybrid", "query": "회전하는 그릇의 바깥면", "visual_query": "two hands smoothing the outside of a spinning clay pot", "relevant_ranges": [{ "start_ms": 12000, "end_ms": 18000 }] },
+        { "id": "pottery-text-rim", "kind": "text", "query": "둥근 테두리를 집어 정리", "relevant_ranges": [{ "start_ms": 18000, "end_ms": 24000 }] },
+        { "id": "pottery-visual-finished-cup", "kind": "visual", "query": "완성된 컵 모양 점토 그릇", "visual_query": "finished cup-shaped clay vessel rotating on a rustic pottery wheel", "relevant_ranges": [{ "start_ms": 24000, "end_ms": 30788 }] }
+      ]
+    },
+    {
+      "id": "latte-art",
+      "split": "development",
+      "filename": "latte.webm",
+      "duration_ms": 17700,
+      "source": {
+        "page_url": "https://commons.wikimedia.org/wiki/File:Latte_Coffee_making.webm",
+        "download_url": "https://upload.wikimedia.org/wikipedia/commons/7/7e/Latte_Coffee_making.webm",
+        "sha256": "e08e6c32cec59e6d5117a94aa726e9c959f67183b39efb2476973778c408ae26",
+        "bytes": 1549075,
+        "license": "CC BY-SA 4.0",
+        "license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+        "attribution": "Stevenndori289"
+      },
+      "annotation": { "method": "manual contact-sheet review at 1-3 second intervals", "reviewed_at": "2026-08-20" },
+      "captions": [
+        { "start_ms": 0, "end_ms": 3000, "text": "금속 피처의 우유가 기울어진 흰 커피잔에 처음 부어진다. Milk first pours from a metal pitcher into a tilted white cup." },
+        { "start_ms": 3000, "end_ms": 7000, "text": "바리스타가 피처를 커피 표면 가까이 대고 가는 우유 줄기를 붓는다. The barista holds the pitcher near the coffee and pours a thin stream." },
+        { "start_ms": 7000, "end_ms": 11000, "text": "피처를 좌우로 움직여 흰 거품 무늬를 그린다. The pitcher moves side to side to draw a white foam pattern." },
+        { "start_ms": 11000, "end_ms": 14000, "text": "완성된 밝은 잎 모양 라테 아트가 잔 위에 보인다. The finished pale leaf-shaped latte art is shown in the cup." },
+        { "start_ms": 14000, "end_ms": 17700, "text": "흰 티셔츠를 입은 바리스타가 완성된 커피잔을 들고 얼굴을 보인다. The barista in a white shirt holds the finished cup with his face visible." }
+      ],
+      "queries": [
+        { "id": "latte-text-first-pour", "kind": "text", "query": "흰 커피잔에 처음 부어진다", "relevant_ranges": [{ "start_ms": 0, "end_ms": 3000 }] },
+        { "id": "latte-visual-thin-stream", "kind": "visual", "query": "커피 표면에 가는 우유 줄기", "visual_query": "thin stream of milk poured from a metal pitcher close to coffee", "relevant_ranges": [{ "start_ms": 3000, "end_ms": 7000 }] },
+        { "id": "latte-hybrid-drawing", "kind": "hybrid", "query": "흰 거품 무늬를 그린다", "visual_query": "barista moving a milk pitcher side to side to draw latte art", "relevant_ranges": [{ "start_ms": 7000, "end_ms": 11000 }] },
+        { "id": "latte-text-leaf", "kind": "text", "query": "밝은 잎 모양 라테 아트", "relevant_ranges": [{ "start_ms": 11000, "end_ms": 14000 }] },
+        { "id": "latte-visual-presenting-cup", "kind": "visual", "query": "바리스타가 완성된 잔을 들고 있음", "visual_query": "barista in a white shirt presenting a finished cup of latte", "relevant_ranges": [{ "start_ms": 14000, "end_ms": 17700 }] }
+      ]
+    },
+    {
+      "id": "bee-and-flowers",
+      "split": "development",
+      "filename": "bee.webm",
+      "duration_ms": 22003,
+      "source": {
+        "page_url": "https://commons.wikimedia.org/wiki/File:Flying_bee_on_flower_in_slow_motion_V.2.webm",
+        "download_url": "https://upload.wikimedia.org/wikipedia/commons/8/83/Flying_bee_on_flower_in_slow_motion_V.2.webm",
+        "sha256": "b53c8af5224a40905512fe04c2fb5b2ca88aba466900f76f0b86600ed7e48c19",
+        "bytes": 2139410,
+        "license": "CC BY-SA 4.0",
+        "license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+        "attribution": "Pittigrilli"
+      },
+      "annotation": { "method": "manual contact-sheet review at 1-3 second intervals", "reviewed_at": "2026-08-20" },
+      "captions": [
+        { "start_ms": 0, "end_ms": 4000, "text": "연보라색 꽃송이가 화면을 채우고 벌이 아래쪽에서 다가온다. Pale purple flowers fill the frame as a bee approaches from below." },
+        { "start_ms": 4000, "end_ms": 8000, "text": "벌이 큰 꽃송이 앞에서 날개를 펴고 공중에 머문다. A bee hovers with open wings in front of a large flower cluster." },
+        { "start_ms": 8000, "end_ms": 12000, "text": "벌이 화면 오른쪽의 꽃과 회색 화분 가장자리를 따라 난다. The bee flies along flowers and the gray planter edge on the right." },
+        { "start_ms": 12000, "end_ms": 17000, "text": "벌이 아래쪽 작은 보라색 꽃을 향해 내려간다. The bee dips toward smaller purple blossoms near the bottom." },
+        { "start_ms": 17000, "end_ms": 22003, "text": "벌이 화면 아래 가장자리의 꽃 사이를 천천히 움직인다. The bee moves slowly among blossoms along the lower edge." }
+      ],
+      "queries": [
+        { "id": "bee-text-approach", "kind": "text", "query": "벌이 아래쪽에서 다가온다", "relevant_ranges": [{ "start_ms": 0, "end_ms": 4000 }] },
+        { "id": "bee-visual-hover", "kind": "visual", "query": "꽃 앞에 공중에 머무는 벌", "visual_query": "close bee hovering with open wings in front of pale purple flowers", "relevant_ranges": [{ "start_ms": 4000, "end_ms": 8000 }] },
+        { "id": "bee-hybrid-right-planter", "kind": "hybrid", "query": "회색 화분 가장자리를 따라", "visual_query": "bee flying beside flowers along a gray planter edge on the right", "relevant_ranges": [{ "start_ms": 8000, "end_ms": 12000 }] },
+        { "id": "bee-text-descend", "kind": "text", "query": "작은 보라색 꽃을 향해 내려간다", "relevant_ranges": [{ "start_ms": 12000, "end_ms": 17000 }] },
+        { "id": "bee-visual-lower-edge", "kind": "visual", "query": "아래 가장자리 꽃 사이의 벌", "visual_query": "bee moving among blossoms near the bottom edge of the frame", "relevant_ranges": [{ "start_ms": 17000, "end_ms": 22003 }] }
+      ]
+    },
+    {
+      "id": "excavator-ballet",
+      "split": "development",
+      "filename": "excavator.webm",
+      "duration_ms": 39269,
+      "source": {
+        "page_url": "https://commons.wikimedia.org/wiki/File:Excavator_ballet,_Oberlech_321,_6764_Lech_am_Arlberg,_Austria.webm",
+        "download_url": "https://upload.wikimedia.org/wikipedia/commons/3/3d/Excavator_ballet%2C_Oberlech_321%2C_6764_Lech_am_Arlberg%2C_Austria.webm",
+        "sha256": "6aef232fc15d8cd25dce642ebf84c2d25307435b5b75fb5be01271a77a87f7a1",
+        "bytes": 8718172,
+        "license": "CC BY-SA 4.0",
+        "license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+        "attribution": "KaiKemmann"
+      },
+      "annotation": { "method": "manual contact-sheet review at 1-3 second intervals", "reviewed_at": "2026-08-20" },
+      "captions": [
+        { "start_ms": 0, "end_ms": 5000, "text": "노란 굴착기가 흙더미 위로 버킷을 높이 든다. A yellow excavator raises its bucket high over a dirt pile." },
+        { "start_ms": 5000, "end_ms": 12000, "text": "작은 굴착기가 뒤의 큰 궤도 굴착기 아래에서 땅을 판다. A small excavator digs below a larger tracked machine." },
+        { "start_ms": 12000, "end_ms": 20000, "text": "작은 버킷이 흙을 들어 올리고 굴착기 팔이 방향을 바꾼다. The small bucket lifts soil as the excavator arm pivots." },
+        { "start_ms": 20000, "end_ms": 28000, "text": "큰 궤도 굴착기가 차체를 돌리며 버킷을 앞으로 뻗는다. The large tracked excavator swings its body and extends the bucket." },
+        { "start_ms": 28000, "end_ms": 34200, "text": "큰 버킷이 어두운 흙더미 쪽으로 내려가 흙을 퍼 올린다. The large bucket lowers into dark soil and scoops it." },
+        { "start_ms": 34200, "end_ms": 39269, "text": "카메라 가까이 든 버킷에서 흙이 줄기처럼 쏟아진다. Dirt pours in a stream from a bucket close to the camera." }
+      ],
+      "queries": [
+        { "id": "excavator-text-raised-bucket", "kind": "text", "query": "버킷을 높이 든다", "relevant_ranges": [{ "start_ms": 0, "end_ms": 5000 }] },
+        { "id": "excavator-visual-two-machines", "kind": "visual", "query": "두 대의 굴착기와 작은 굴착기의 작업", "visual_query": "small yellow excavator digging below a much larger tracked excavator", "relevant_ranges": [{ "start_ms": 5000, "end_ms": 12000 }] },
+        { "id": "excavator-hybrid-pivot", "kind": "hybrid", "query": "버킷이 흙을 들어 올리고", "visual_query": "excavator bucket lifting soil while its arm pivots", "relevant_ranges": [{ "start_ms": 12000, "end_ms": 20000 }] },
+        { "id": "excavator-text-swing", "kind": "text", "query": "차체를 돌리며 버킷을 앞으로", "relevant_ranges": [{ "start_ms": 20000, "end_ms": 28000 }] },
+        { "id": "excavator-visual-pouring-dirt", "kind": "visual", "query": "버킷에서 쏟아지는 흙", "visual_query": "stream of dirt pouring from an excavator bucket close to camera", "relevant_ranges": [{ "start_ms": 34200, "end_ms": 39269 }] }
+      ]
+    },
+    {
+      "id": "sintel-trailer",
+      "split": "development",
+      "filename": "sintel.mp4",
+      "duration_ms": 52208,
+      "source": {
+        "page_url": "https://durian.blender.org/about/",
+        "download_url": "https://media.w3.org/2010/05/sintel/trailer.mp4",
+        "sha256": "b670602fa00934ca27c4351bb0efe7ea7a07fae57284e44226025eeed7c51254",
+        "bytes": 4372373,
+        "license": "CC BY 3.0",
+        "license_url": "https://creativecommons.org/licenses/by/3.0/",
+        "attribution": "Blender Foundation / Durian Open Movie Project"
+      },
+      "annotation": { "method": "manual contact-sheet review at 1-3 second intervals", "reviewed_at": "2026-08-20" },
+      "captions": [
+        { "start_ms": 0, "end_ms": 7000, "text": "망토를 두른 여행자가 눈 덮인 산과 절벽 사이를 걷는다. A cloaked traveler walks among snowy mountains and cliffs." },
+        { "start_ms": 7000, "end_ms": 10500, "text": "검은 화면에 Blender Foundation 소개 글자가 나온다. Blender Foundation text appears on a black screen." },
+        { "start_ms": 10500, "end_ms": 15000, "text": "주황색 수염을 가진 노인이 어두운 실내에서 말한다. An old man with an orange beard speaks in a dark room." },
+        { "start_ms": 15000, "end_ms": 19500, "text": "카메라가 높은 건물 사이의 좁은 돌 골목을 내려다본다. The camera looks down a narrow stone alley between tall buildings." },
+        { "start_ms": 19500, "end_ms": 23500, "text": "젊은 여성이 검은 새와 파편 같은 형상들 사이에서 놀란다. A young woman is startled among black bird-like fragments." },
+        { "start_ms": 23500, "end_ms": 29000, "text": "해질녘 붉은 폐허와 절벽 앞에 여성이 서 있다. A woman stands before red ruins and cliffs at sunset." },
+        { "start_ms": 29000, "end_ms": 35000, "text": "여성이 손을 뻗자 작은 용이 주황빛 하늘을 가로질러 날아온다. A small dragon flies across an orange sky toward her outstretched hand." },
+        { "start_ms": 35000, "end_ms": 41000, "text": "황금빛 사막 모래언덕이 넓게 이어진다. Golden desert dunes stretch across the frame." },
+        { "start_ms": 41000, "end_ms": 52208, "text": "검은 화면에 Sintel 제목과 제작진 글자가 나타난다. The Sintel title and credits appear on black." }
+      ],
+      "queries": [
+        { "id": "sintel-text-snow-traveler", "kind": "text", "query": "눈 덮인 산과 절벽 사이", "relevant_ranges": [{ "start_ms": 0, "end_ms": 7000 }] },
+        { "id": "sintel-visual-old-man", "kind": "visual", "query": "주황색 수염 노인", "visual_query": "animated old man with a large orange beard in a dark room", "relevant_ranges": [{ "start_ms": 10500, "end_ms": 15000 }] },
+        { "id": "sintel-hybrid-black-fragments", "kind": "hybrid", "query": "검은 새와 파편 같은 형상", "visual_query": "animated young woman startled among swirling black bird-like fragments", "relevant_ranges": [{ "start_ms": 19500, "end_ms": 23500 }] },
+        { "id": "sintel-text-desert", "kind": "text", "query": "황금빛 사막 모래언덕", "relevant_ranges": [{ "start_ms": 35000, "end_ms": 41000 }] },
+        { "id": "sintel-visual-dragon-hand", "kind": "visual", "query": "손을 향해 날아오는 작은 용", "visual_query": "small dragon flying through orange sky toward a woman's outstretched hand", "relevant_ranges": [{ "start_ms": 29000, "end_ms": 35000 }] }
+      ]
+    },
+    {
+      "id": "big-buck-bunny-trailer",
+      "split": "development",
+      "filename": "big-buck-bunny.mp4",
+      "duration_ms": 33003,
+      "source": {
+        "page_url": "https://peach.blender.org/about/",
+        "download_url": "https://media.w3.org/2010/05/bunny/trailer.mp4",
+        "sha256": "b2ded9ae5a20fa36ca8cec49ef923bffb5e1a51d9e8c1f8336273d2fa9d35ff0",
+        "bytes": 11053871,
+        "license": "CC BY 3.0",
+        "license_url": "https://creativecommons.org/licenses/by/3.0/",
+        "attribution": "Blender Foundation / Peach Open Movie Project"
+      },
+      "annotation": { "method": "manual contact-sheet review at 1-3 second intervals", "reviewed_at": "2026-08-20" },
+      "captions": [
+        { "start_ms": 0, "end_ms": 2500, "text": "흰 화면에 청록색 Peach Open Movie Project 소개 문구가 나온다. Turquoise Peach project text appears on white." },
+        { "start_ms": 2500, "end_ms": 5200, "text": "햇빛 드는 숲속에 이끼 낀 큰 나무와 어두운 굴이 보인다. A mossy tree with a dark burrow stands in a sunny forest." },
+        { "start_ms": 5200, "end_ms": 8000, "text": "흰 화면에 ONE BIG RABBIT이라는 청록색 문구가 나온다. Turquoise ONE BIG RABBIT text appears on white." },
+        { "start_ms": 8000, "end_ms": 11500, "text": "커다란 흰 토끼가 밝은 초원에 서서 걷는다. A large white rabbit stands and walks in a bright meadow." },
+        { "start_ms": 11500, "end_ms": 14500, "text": "작은 숲 동물 세 마리가 풀과 나무 뒤에서 함께 내다본다. Three small woodland animals peek together from grass and a tree." },
+        { "start_ms": 14500, "end_ms": 17500, "text": "흰 토끼 얼굴이 분홍빛 하늘을 배경으로 크게 보인다. The white rabbit's face fills the frame against a pink sky." },
+        { "start_ms": 17500, "end_ms": 20500, "text": "흰 토끼가 두 손으로 길게 당긴 줄을 잡고 있다. The white rabbit holds a cord stretched tightly between both hands." },
+        { "start_ms": 20500, "end_ms": 23500, "text": "작은 회색 설치류가 떨어지는 나뭇잎 아래 숲 바닥에 앉아 있다. A small gray rodent sits on the forest floor under falling leaves." },
+        { "start_ms": 23500, "end_ms": 26500, "text": "화난 붉은 다람쥐가 분홍색 나비를 앞에 두고 손을 든다. An angry red squirrel raises a hand beside a pink butterfly." },
+        { "start_ms": 26500, "end_ms": 33003, "text": "흰 화면에 Big Buck Bunny 제목과 웹 주소가 나온다. The Big Buck Bunny title and web address appear on white." }
+      ],
+      "queries": [
+        { "id": "bunny-text-burrow", "kind": "text", "query": "이끼 낀 큰 나무와 어두운 굴", "relevant_ranges": [{ "start_ms": 2500, "end_ms": 5200 }] },
+        { "id": "bunny-visual-white-rabbit", "kind": "visual", "query": "초원의 커다란 흰 토끼", "visual_query": "large animated white rabbit standing in a bright green meadow", "relevant_ranges": [{ "start_ms": 8000, "end_ms": 11500 }] },
+        { "id": "bunny-hybrid-three-animals", "kind": "hybrid", "query": "작은 숲 동물 세 마리", "visual_query": "three small animated woodland animals peeking together from grass", "relevant_ranges": [{ "start_ms": 11500, "end_ms": 14500 }] },
+        { "id": "bunny-text-cord", "kind": "text", "query": "두 손으로 길게 당긴 줄", "relevant_ranges": [{ "start_ms": 17500, "end_ms": 20500 }] },
+        { "id": "bunny-visual-squirrel-butterfly", "kind": "visual", "query": "붉은 다람쥐와 분홍 나비", "visual_query": "angry animated red squirrel raising a hand beside a pink butterfly", "relevant_ranges": [{ "start_ms": 23500, "end_ms": 26500 }] }
+      ]
+    },
+    {
+      "id": "birds-behind-ferry",
+      "split": "holdout",
+      "filename": "birds-ferry.webm",
+      "duration_ms": 44415,
+      "source": {
+        "page_url": "https://commons.wikimedia.org/wiki/File:Birds_flying_behind_a_ferry.webm",
+        "download_url": "https://upload.wikimedia.org/wikipedia/commons/0/00/Birds_flying_behind_a_ferry.webm",
+        "sha256": "a115a7b9a8309de5ed9f3352ec02a5b06ae020ad0a5669844b70680890cd24e8",
+        "bytes": 13072081,
+        "license": "CC BY-SA 3.0",
+        "license_url": "https://creativecommons.org/licenses/by-sa/3.0/",
+        "attribution": "Subhashish Panigrahi"
+      },
+      "annotation": { "method": "manual contact-sheet review at 1-3 second intervals", "reviewed_at": "2026-08-20" },
+      "captions": [
+        { "start_ms": 0, "end_ms": 5000, "text": "갈매기 몇 마리가 푸른 회색 하늘 가까이 크게 날아간다. Several gulls fly close against a blue-gray sky." },
+        { "start_ms": 5000, "end_ms": 11000, "text": "갈매기 떼가 회색 바다와 흐릿한 언덕 위를 가로지른다. A flock of gulls crosses above gray sea and hazy hills." },
+        { "start_ms": 11000, "end_ms": 18000, "text": "빨강과 파랑 페리 난간 너머 물살 위에 많은 갈매기가 모인다. Many gulls gather over the wake beyond a red and blue ferry rail." },
+        { "start_ms": 18000, "end_ms": 26000, "text": "승객의 회색 털 부츠와 다리가 화면 아래에 있고 바다 새가 그 너머로 난다. A passenger's gray furry boots and legs appear below birds over the sea." },
+        { "start_ms": 26000, "end_ms": 33000, "text": "하얀 물살 너머 수평선에 여러 화물선이 멀리 보인다. Several cargo ships appear far on the horizon beyond the white wake." },
+        { "start_ms": 33000, "end_ms": 44415, "text": "페리 뒤의 하얀 거품 물살 위를 갈매기 떼가 빙빙 돈다. A flock of gulls circles over the ferry's foamy white wake." }
+      ],
+      "queries": [
+        { "id": "ferry-text-close-gulls", "kind": "text", "query": "푸른 회색 하늘 가까이", "relevant_ranges": [{ "start_ms": 0, "end_ms": 5000 }] },
+        { "id": "ferry-visual-colored-rail", "kind": "visual", "query": "빨강 파랑 페리 난간과 갈매기", "visual_query": "many gulls above a ferry wake beyond a red and blue railing", "relevant_ranges": [{ "start_ms": 11000, "end_ms": 18000 }] },
+        { "id": "ferry-hybrid-furry-boots", "kind": "hybrid", "query": "승객의 회색 털 부츠", "visual_query": "passenger's gray furry boots at bottom of frame with sea birds beyond", "relevant_ranges": [{ "start_ms": 18000, "end_ms": 26000 }] },
+        { "id": "ferry-text-cargo-ships", "kind": "text", "query": "수평선에 여러 화물선", "relevant_ranges": [{ "start_ms": 26000, "end_ms": 33000 }] },
+        { "id": "ferry-visual-foamy-wake", "kind": "visual", "query": "하얀 거품 물살 위 갈매기 떼", "visual_query": "flock of gulls circling over a ferry's foamy white wake", "relevant_ranges": [{ "start_ms": 33000, "end_ms": 44415 }] }
+      ]
+    },
+    {
+      "id": "curiosity-drill",
+      "split": "holdout",
+      "filename": "rover.webm",
+      "duration_ms": 24500,
+      "source": {
+        "page_url": "https://commons.wikimedia.org/wiki/File:NASA%E2%80%99s_Curiosity_Rover_Frees_Its_Drill_From_a_Rock_(SVS31397).webm",
+        "download_url": "https://upload.wikimedia.org/wikipedia/commons/f/fb/NASA%E2%80%99s_Curiosity_Rover_Frees_Its_Drill_From_a_Rock_%28SVS31397%29.webm",
+        "sha256": "32b20ff42e64f9e7eaacff6f60e80b1b1fdb3b8a2611f4212fe6fba82b1ef436",
+        "bytes": 1535138,
+        "license": "Public domain",
+        "license_url": "https://creativecommons.org/publicdomain/mark/1.0/",
+        "attribution": "NASA Scientific Visualization Studio / Global Science and Technology, Inc. / Marit Jentoft-Nilsen"
+      },
+      "annotation": { "method": "manual contact-sheet review at 1-3 second intervals", "reviewed_at": "2026-08-20" },
+      "captions": [
+        { "start_ms": 0, "end_ms": 5000, "text": "흑백 화성 지면 중앙에서 로버의 드릴 팔이 바위를 누른다. The rover drill arm presses a rock at the center of a black-and-white Mars view." },
+        { "start_ms": 5000, "end_ms": 9000, "text": "드릴 장치가 평평한 돌 위에서 조금 위로 이동한다. The drill mechanism shifts upward over a flat stone." },
+        { "start_ms": 9000, "end_ms": 14000, "text": "로봇 팔의 긴 그림자가 밝은 바위 판을 가로지른다. The robotic arm casts a long shadow across a bright rock slab." },
+        { "start_ms": 14000, "end_ms": 19000, "text": "드릴 조립체가 들리고 아래 바위에 어두운 원형 자국이 보인다. The drill assembly rises above a dark circular mark in the rock." },
+        { "start_ms": 19000, "end_ms": 24500, "text": "도구가 화면 위쪽으로 물러나고 파인 바위 표면이 남는다. The tool retracts toward the top, leaving a disturbed rock surface." }
+      ],
+      "queries": [
+        { "id": "rover-text-press-rock", "kind": "text", "query": "드릴 팔이 바위를 누른다", "relevant_ranges": [{ "start_ms": 0, "end_ms": 5000 }] },
+        { "id": "rover-visual-shift", "kind": "visual", "query": "평평한 돌 위로 이동하는 로버 드릴", "visual_query": "Mars rover drill mechanism shifting upward over a flat stone", "relevant_ranges": [{ "start_ms": 5000, "end_ms": 9000 }] },
+        { "id": "rover-hybrid-long-shadow", "kind": "hybrid", "query": "긴 그림자가 밝은 바위 판을", "visual_query": "long robotic arm shadow across a bright flat rock slab on Mars", "relevant_ranges": [{ "start_ms": 9000, "end_ms": 14000 }] },
+        { "id": "rover-text-circular-mark", "kind": "text", "query": "어두운 원형 자국", "relevant_ranges": [{ "start_ms": 14000, "end_ms": 19000 }] },
+        { "id": "rover-visual-retract", "kind": "visual", "query": "위쪽으로 물러나는 로버 도구", "visual_query": "Mars rover tool retracting upward above a disturbed rock surface", "relevant_ranges": [{ "start_ms": 19000, "end_ms": 24500 }] }
+      ]
+    },
+    {
+      "id": "slovenska-street-traffic",
+      "split": "holdout",
+      "filename": "traffic.webm",
+      "duration_ms": 18723,
+      "source": {
+        "page_url": "https://commons.wikimedia.org/wiki/File:Traffic_on_Slovenska_street_2.webm",
+        "download_url": "https://upload.wikimedia.org/wikipedia/commons/d/d9/Traffic_on_Slovenska_street_2.webm",
+        "sha256": "df415ce498bf02f15c0de7acf2cce97649842454e6d798ced403e9d081059791",
+        "bytes": 10788112,
+        "license": "CC BY 3.0",
+        "license_url": "https://creativecommons.org/licenses/by/3.0/",
+        "attribution": "Sounds of Changes"
+      },
+      "annotation": { "method": "manual contact-sheet review at 1-3 second intervals", "reviewed_at": "2026-08-20" },
+      "captions": [
+        { "start_ms": 0, "end_ms": 2500, "text": "흰색 시내버스의 뒷면이 가로수길을 따라 멀어진다. The rear of a white city bus moves away down a tree-lined street." },
+        { "start_ms": 2500, "end_ms": 5500, "text": "초록색 시내버스가 왼쪽 차선으로 가까이 지나간다. A green city bus passes close along the left lane." },
+        { "start_ms": 5500, "end_ms": 9000, "text": "초록 버스가 빠져나가고 오른쪽 정류장 옆에 남자가 서 있다. The green bus exits while a man stands beside the stop on the right." },
+        { "start_ms": 9000, "end_ms": 13500, "text": "흰 승합차가 멀어지고 왼쪽 보도에 야외 카페 파라솔이 늘어서 있다. A white van recedes past outdoor cafe umbrellas on the left sidewalk." },
+        { "start_ms": 13500, "end_ms": 17000, "text": "자전거를 탄 사람이 왼쪽에서 도로 앞쪽으로 들어온다. A cyclist rides into the foreground from the left." },
+        { "start_ms": 17000, "end_ms": 18723, "text": "차량이 멀어진 뒤 도로 앞부분이 비어 있다. The foreground street is clear after the vehicles move away." }
+      ],
+      "queries": [
+        { "id": "traffic-text-white-bus", "kind": "text", "query": "흰색 시내버스의 뒷면", "relevant_ranges": [{ "start_ms": 0, "end_ms": 2500 }] },
+        { "id": "traffic-visual-green-bus", "kind": "visual", "query": "가까이 지나가는 초록 버스", "visual_query": "green city bus passing close on a European street", "relevant_ranges": [{ "start_ms": 2500, "end_ms": 5500 }] },
+        { "id": "traffic-hybrid-man-stop", "kind": "hybrid", "query": "오른쪽 정류장 옆에 남자", "visual_query": "man standing beside a bus stop on the right after a green bus passes", "relevant_ranges": [{ "start_ms": 5500, "end_ms": 9000 }] },
+        { "id": "traffic-text-cafe-umbrellas", "kind": "text", "query": "야외 카페 파라솔", "relevant_ranges": [{ "start_ms": 9000, "end_ms": 13500 }] },
+        { "id": "traffic-visual-cyclist", "kind": "visual", "query": "왼쪽에서 들어오는 자전거", "visual_query": "cyclist riding into the street foreground from the left", "relevant_ranges": [{ "start_ms": 13500, "end_ms": 17000 }] }
+      ]
+    },
+    {
+      "id": "burhanpur-courtyard-performance",
+      "split": "holdout",
+      "filename": "dance.webm",
+      "duration_ms": 48824,
+      "source": {
+        "page_url": "https://commons.wikimedia.org/wiki/File:X2akansha_videos_of_dance_performance_at_Burhanpur.WebM",
+        "download_url": "https://upload.wikimedia.org/wikipedia/commons/c/c7/X2akansha_videos_of_dance_performance_at_Burhanpur.WebM",
+        "sha256": "2dcce9a06bdb6d2ff5b2640e52c034b57b60ed5bdfb14615f7df03d17da9f748",
+        "bytes": 2517432,
+        "license": "CC BY-SA 3.0",
+        "license_url": "https://creativecommons.org/licenses/by-sa/3.0/",
+        "attribution": "Sushil231088"
+      },
+      "annotation": { "method": "manual contact-sheet review at 1 second intervals", "reviewed_at": "2026-08-20" },
+      "captions": [
+        { "start_ms": 0, "end_ms": 8000, "text": "낮은 시점의 마당에 직사각형 금속 틀이 서 있고 멀리 파란 옷 사람이 보인다. A rectangular metal frame stands in a courtyard with a person in blue beyond it." },
+        { "start_ms": 8000, "end_ms": 11000, "text": "촬영자의 손가락이 카메라 렌즈 대부분을 붉게 가린다. The camera operator's finger covers most of the lens in red." },
+        { "start_ms": 11000, "end_ms": 19000, "text": "알록달록한 원통형 공연 소품이 앞에 누워 있고 뒤에서 사람이 검은 천과 함께 움직인다. A colorful cylindrical performance prop lies in front as a person moves with black fabric behind it." },
+        { "start_ms": 19000, "end_ms": 30000, "text": "공연자들이 금속 틀 뒤에서 길고 검은 동물 모양 천 소품을 움직인다. Performers move a long black animal-shaped fabric prop behind the metal frame." },
+        { "start_ms": 30000, "end_ms": 39000, "text": "분홍색과 파란색 건물과 원통형 소품이 있는 마당을 넓게 보여준다. A wide view shows a pink and blue building and the cylindrical prop in the courtyard." },
+        { "start_ms": 39000, "end_ms": 48824, "text": "카메라가 움직이는 동안 파란 옷 사람이 긴 검은 천 소품 옆에 다시 나타난다. A person in blue reappears beside the long black fabric as the camera pans." }
+      ],
+      "queries": [
+        { "id": "courtyard-text-metal-frame", "kind": "text", "query": "직사각형 금속 틀", "relevant_ranges": [{ "start_ms": 0, "end_ms": 8000 }] },
+        { "id": "courtyard-visual-finger", "kind": "visual", "query": "손가락이 렌즈를 가리는 장면", "visual_query": "camera operator's finger covering most of the lens in red", "relevant_ranges": [{ "start_ms": 8000, "end_ms": 11000 }] },
+        { "id": "courtyard-hybrid-cylinder", "kind": "hybrid", "query": "알록달록한 원통형 공연 소품", "visual_query": "colorful rolled cylindrical performance prop lying in a courtyard foreground", "relevant_ranges": [{ "start_ms": 11000, "end_ms": 19000 }] },
+        { "id": "courtyard-text-black-fabric", "kind": "text", "query": "길고 검은 동물 모양 천 소품", "relevant_ranges": [{ "start_ms": 19000, "end_ms": 30000 }] },
+        { "id": "courtyard-visual-wide-building", "kind": "visual", "query": "분홍 파랑 건물과 넓은 마당", "visual_query": "wide courtyard with a small pink and blue building and a rolled prop", "relevant_ranges": [{ "start_ms": 30000, "end_ms": 39000 }] }
+      ]
+    }
+  ]
+}

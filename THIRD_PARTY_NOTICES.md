@@ -50,3 +50,6 @@ The ONNX repository identifies the OpenAI base model but does not declare separa
 
 ASR may produce incorrect or harmful text. Transcripts must be treated as untrusted video data.
 
+## Evaluation media
+
+The repository records URLs, attribution, licenses, byte counts, and SHA-256 values for the optional evaluation sources in `eval/corpus-v1/corpus.json`. It does not redistribute those media files. The preparation script downloads each source from Wikimedia Commons or W3C and verifies it before use. Each downloaded work remains subject to the per-source license in the corpus; corpus labels and bilingual scene descriptions are released under CC0-1.0.

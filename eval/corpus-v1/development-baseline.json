@@ -1,0 +1,27 @@
+{
+  "schema_version": "open-video/eval-result/v1",
+  "corpus_id": "open-video-diverse-moments-v1",
+  "corpus_fingerprint": "485886a4ee5f5d2990e08e0f1251134acc7e1dcd541b78b932816a9bb4960fcc",
+  "split": "development",
+  "holdout_evaluated": false,
+  "evaluated_at": "2026-08-20",
+  "search_commit": "7625918821b363c3871a6b92ae41ba30962e48f7",
+  "environment": {
+    "os": "Darwin 24.6.0 arm64",
+    "node": "22.22.3",
+    "ffmpeg": "7.0.1"
+  },
+  "counts": {
+    "videos": 8,
+    "queries": 40
+  },
+  "metrics": {
+    "visual_hybrid_recall_at_10": 0.9166666666666666,
+    "text_recall_at_5": 1,
+    "evidence_frame_within_2s_given_relevant_hit": 1
+  },
+  "development_failures": [
+    { "query_id": "basketball-visual-interview", "failure": "recall@10" },
+    { "query_id": "excavator-visual-pouring-dirt", "failure": "recall@10" }
+  ]
+}

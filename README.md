@@ -122,13 +122,15 @@ pnpm typecheck
 pnpm test
 pnpm build
 pnpm skill:validate
-# With an authorized 12-video/60-query labelled dataset:
-pnpm eval -- /absolute/path/to/dataset.json
+pnpm eval:validate
+# Download/index the non-holdout split in an external workspace:
+pnpm eval:prepare -- --workspace /absolute/path/to/eval-workspace --split development
+pnpm eval -- /absolute/path/to/eval-workspace/dataset.development.json
 ```
 
 The test suite includes Go parser/extraction tests, TypeScript ranking/token/schema tests, and a real FFmpeg + Go-engine integration test over a generated six-second video. Networked YouTube behavior remains a manual or scheduled test so pull requests are deterministic.
 
-Capacity measurements and their limitations are recorded in [`docs/benchmarks.md`](docs/benchmarks.md). Search-quality release gates use the uncommitted authorized corpus described in [`eval/README.md`](eval/README.md).
+Capacity measurements and their limitations are recorded in [`docs/benchmarks.md`](docs/benchmarks.md). The reproducible 12-video/60-query development/holdout corpus and its anti-overfitting protocol are documented in [`eval/README.md`](eval/README.md); raw third-party media and generated indexes stay outside Git.
 
 ## License
 

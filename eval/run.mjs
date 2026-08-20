@@ -3,13 +3,21 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-const datasetPath = process.argv[2];
+const datasetPath = process.argv.slice(2).find((value) => value !== "--" && !value.startsWith("--"));
 if (!datasetPath) {
-  console.error("Usage: pnpm eval -- /absolute/path/to/dataset.json");
+  console.error("Usage: pnpm eval -- /absolute/path/to/dataset.json [--acknowledge-holdout]");
   process.exit(2);
 }
 const dataset = JSON.parse(await readFile(path.resolve(datasetPath), "utf8"));
 if (!Array.isArray(dataset.videos)) throw new Error("dataset.videos must be an array");
+if (dataset.contains_holdout && !process.argv.includes("--acknowledge-holdout")) {
+  throw new Error("This dataset contains the frozen holdout. Re-run with --acknowledge-holdout and do not tune from its results.");
+}
+const expectedVideoCount = dataset.expected_video_count ?? 12;
+const expectedQueryCount = dataset.expected_query_count ?? 60;
+if (!Number.isInteger(expectedVideoCount) || !Number.isInteger(expectedQueryCount)) {
+  throw new Error("Dataset expected counts must be integers.");
+}
 
 const repository = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const cli = path.join(repository, "packages", "cli", "dist", "cli.js");
@@ -53,26 +61,43 @@ for (const video of dataset.videos) {
       visualTotal += 1;
       if (relevantHit) visualFound += 1;
     }
-    frameTotal += 1;
-    if (relevantHit?.frames?.some((frame) => inRange(frame.timestamp_ms, query.relevant_ranges, 2_000))) frameFound += 1;
+    if (relevantHit) {
+      frameTotal += 1;
+      if (relevantHit.frames?.some((frame) => inRange(frame.timestamp_ms, query.relevant_ranges, 2_000))) {
+        frameFound += 1;
+      } else {
+        details.push({ video_id: video.video_id, query_id: query.id, failure: "evidence-frame" });
+      }
+    }
     if (!relevantHit) details.push({ video_id: video.video_id, query_id: query.id, failure: `recall@${limit}` });
   }
 }
 
 const queryCount = visualTotal + textTotal;
 const metrics = {
+  corpus_id: dataset.corpus_id,
+  corpus_fingerprint: dataset.corpus_fingerprint,
+  split: dataset.split ?? "custom",
   videos: dataset.videos.length,
   queries: queryCount,
   visual_hybrid_recall_at_10: visualTotal === 0 ? null : visualFound / visualTotal,
   text_recall_at_5: textTotal === 0 ? null : textFound / textTotal,
-  evidence_frame_within_2s: frameTotal === 0 ? null : frameFound / frameTotal,
-  details,
+  evidence_frame_within_2s_given_relevant_hit: frameTotal === 0 ? null : frameFound / frameTotal,
+  ...(dataset.contains_holdout || dataset.report_policy === "aggregate-only"
+    ? {
+        failure_counts: Object.fromEntries(
+          [...new Set(details.map((detail) => detail.failure))]
+            .sort()
+            .map((failure) => [failure, details.filter((detail) => detail.failure === failure).length]),
+        ),
+      }
+    : { details }),
 };
 console.log(JSON.stringify(metrics, null, 2));
 
 const failed =
-  dataset.videos.length < 12 ||
-  queryCount < 60 ||
+  dataset.videos.length !== expectedVideoCount ||
+  queryCount !== expectedQueryCount ||
   visualTotal === 0 ||
   textTotal === 0 ||
   visualFound / visualTotal < 0.8 ||
