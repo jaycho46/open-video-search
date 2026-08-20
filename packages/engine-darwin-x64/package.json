@@ -1,0 +1,11 @@
+{
+  "name": "open-video-engine-darwin-x64",
+  "version": "0.1.0",
+  "description": "Open Video media engine for macOS x64",
+  "license": "Apache-2.0",
+  "publishConfig": { "access": "public", "provenance": true },
+  "os": ["darwin"],
+  "cpu": ["x64"],
+  "bin": { "open-video-engine": "bin/open-video-engine" },
+  "files": ["bin", "LICENSE", "THIRD_PARTY_NOTICES.md"]
+}

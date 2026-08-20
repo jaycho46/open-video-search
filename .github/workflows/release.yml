@@ -1,0 +1,73 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  release:
+    runs-on: ubuntu-24.04
+    environment: npm
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.14.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+          registry-url: https://registry.npmjs.org
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.27.0"
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm audit --prod --audit-level high
+      - run: pnpm --filter open-video build
+      - name: Verify tag and package versions
+        run: |
+          test "${GITHUB_REF_NAME#v}" = "$(node -p "require('./packages/cli/package.json').version")"
+          for package in packages/engine-*; do
+            test "${GITHUB_REF_NAME#v}" = "$(node -p "require('./' + process.argv[1] + '/package.json').version" "$package")"
+          done
+      - name: Build four native engine packages
+        run: |
+          mkdir -p artifacts
+          for target in darwin-arm64 darwin-x64 linux-arm64 linux-x64; do
+            os="${target%-*}"
+            arch="${target#*-}"
+            destination="packages/engine-${target}/bin/open-video-engine"
+            mkdir -p "$(dirname "$destination")"
+            (cd engine && CGO_ENABLED=0 GOOS="$os" GOARCH="$arch" go build -trimpath -ldflags="-s -w" -o "../$destination" ./cmd/open-video-engine)
+            tar -czf "artifacts/open-video-engine-${target}.tar.gz" -C "packages/engine-${target}" bin/open-video-engine
+          done
+          sha256sum artifacts/*.tar.gz > artifacts/SHA256SUMS
+          cp release/asset-manifest.json artifacts/asset-manifest.json
+      - uses: anchore/sbom-action/download-syft@v0
+      - name: Generate SPDX SBOM
+        run: syft dir:. -o spdx-json=artifacts/open-video.spdx.json
+      - name: Audit the exact packed npm install
+        run: |
+          mkdir -p "$RUNNER_TEMP/npm-audit-packs"
+          pnpm --filter open-video pack --pack-destination "$RUNNER_TEMP/npm-audit-packs"
+          pnpm --filter open-video-engine-linux-x64 pack --pack-destination "$RUNNER_TEMP/npm-audit-packs"
+          audit_directory="$(mktemp -d)"
+          cd "$audit_directory"
+          npm init -y >/dev/null
+          npm install \
+            "$RUNNER_TEMP/npm-audit-packs/open-video-${GITHUB_REF_NAME#v}.tgz" \
+            "$RUNNER_TEMP/npm-audit-packs/open-video-engine-linux-x64-${GITHUB_REF_NAME#v}.tgz"
+          npm audit --omit=dev --audit-level high
+      - name: Publish npm packages with matching versions
+        run: pnpm -r --filter "./packages/**" publish --access public --no-git-checks
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_CONFIG_PROVENANCE: "true"
+      - uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          files: artifacts/*

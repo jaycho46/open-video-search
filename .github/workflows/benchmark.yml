@@ -1,0 +1,61 @@
+name: Two-hour benchmark
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  capacity:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, ubuntu-24.04-arm, macos-14, macos-14-arm64]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.14.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.27.0"
+      - name: Install FFmpeg on Linux
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg time
+      - name: Install FFmpeg on macOS
+        if: runner.os == 'macOS'
+        run: brew list ffmpeg >/dev/null 2>&1 || brew install ffmpeg
+      - run: pnpm install --frozen-lockfile && pnpm build
+      - uses: actions/cache@v4
+        with:
+          path: ${{ runner.temp }}/open-video-cache/assets
+          key: benchmark-assets-v0.1-${{ runner.os }}-${{ runner.arch }}
+      - name: Generate the synthetic ceiling fixture
+        run: ffmpeg -hide_banner -loglevel error -y -f lavfi -i color=c=navy:s=320x180:r=1:d=7200 -c:v libx264 -preset ultrafast -pix_fmt yuv420p -an "${RUNNER_TEMP}/fixture.mp4"
+      - name: Measure cold and reused indexing
+        env:
+          OPEN_VIDEO_CACHE_DIR: ${{ runner.temp }}/open-video-cache
+        run: |
+          if [ "$RUNNER_OS" = "Linux" ]; then
+            /usr/bin/time -v node packages/cli/dist/cli.js index "${RUNNER_TEMP}/fixture.mp4" --output "${RUNNER_TEMP}/index" --json > "${RUNNER_TEMP}/cold.json" 2> "${RUNNER_TEMP}/cold.log"
+            /usr/bin/time -v node packages/cli/dist/cli.js index "${RUNNER_TEMP}/fixture.mp4" --output "${RUNNER_TEMP}/index" --offline --json > "${RUNNER_TEMP}/reuse.json" 2> "${RUNNER_TEMP}/reuse.log"
+          else
+            /usr/bin/time -l node packages/cli/dist/cli.js index "${RUNNER_TEMP}/fixture.mp4" --output "${RUNNER_TEMP}/index" --json > "${RUNNER_TEMP}/cold.json" 2> "${RUNNER_TEMP}/cold.log"
+            /usr/bin/time -l node packages/cli/dist/cli.js index "${RUNNER_TEMP}/fixture.mp4" --output "${RUNNER_TEMP}/index" --offline --json > "${RUNNER_TEMP}/reuse.json" 2> "${RUNNER_TEMP}/reuse.log"
+          fi
+          node -e 'const x=require(process.argv[1]); if (!x.reused) process.exit(1)' "${RUNNER_TEMP}/reuse.json"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: benchmark-${{ runner.os }}-${{ runner.arch }}
+          path: |
+            ${{ runner.temp }}/cold.json
+            ${{ runner.temp }}/cold.log
+            ${{ runner.temp }}/reuse.json
+            ${{ runner.temp }}/reuse.log
+

@@ -1,0 +1,62 @@
+{
+  "name": "open-video",
+  "version": "0.1.0",
+  "description": "Local-first semantic search for moments inside videos",
+  "license": "Apache-2.0",
+  "keywords": [
+    "video-search",
+    "multimodal",
+    "clip",
+    "youtube",
+    "agent-skill"
+  ],
+  "type": "module",
+  "bin": {
+    "open-video": "dist/cli.js"
+  },
+  "exports": {
+    ".": "./dist/index.js",
+    "./schemas": "./dist/schemas.js",
+    "./schema": "./dist/open-video-v1.schema.json"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "THIRD_PARTY_NOTICES.md"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "overrides": {
+    "adm-zip": "0.6.0",
+    "sharp": "0.35.3"
+  },
+  "scripts": {
+    "build": "node scripts/prepare-package-files.mjs && pnpm run clean && tsc -p tsconfig.json && node scripts/generate-schema.mjs && node scripts/generate-release-manifest.mjs",
+    "clean": "node -e \"require('node:fs').rmSync('dist',{recursive:true,force:true})\"",
+    "test": "vitest run",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@huggingface/transformers": "~4.2.0",
+    "commander": "^15.0.0",
+    "minisearch": "^7.2.0",
+    "zod": "^4.4.3"
+  },
+  "optionalDependencies": {
+    "open-video-engine-darwin-arm64": "workspace:*",
+    "open-video-engine-darwin-x64": "workspace:*",
+    "open-video-engine-linux-arm64": "workspace:*",
+    "open-video-engine-linux-x64": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "typescript": "^5.9.0",
+    "vitest": "^4.1.11"
+  }
+}

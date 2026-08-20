@@ -1,0 +1,24 @@
+{
+  "videos": [
+    {
+      "video_id": "local-example",
+      "index_directory": "/absolute/path/to/open-video-index",
+      "queries": [
+        {
+          "id": "example-visual-1",
+          "kind": "visual",
+          "query": "파란 자동차",
+          "visual_query": "a blue car",
+          "relevant_ranges": [{ "start_ms": 42000, "end_ms": 48000 }]
+        },
+        {
+          "id": "example-text-1",
+          "kind": "text",
+          "query": "정확한 자막 구절",
+          "relevant_ranges": [{ "start_ms": 81000, "end_ms": 85000 }]
+        }
+      ]
+    }
+  ]
+}
+

@@ -1,0 +1,33 @@
+{
+  "name": "open-video-workspace",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Local-first, open-source semantic search for moments inside videos.",
+  "license": "Apache-2.0",
+  "packageManager": "pnpm@10.14.0",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "pnpm": {
+    "overrides": {
+      "adm-zip": "0.6.0",
+      "sharp": "0.35.3"
+    },
+    "onlyBuiltDependencies": [
+      "onnxruntime-node",
+      "protobufjs",
+      "sharp"
+    ]
+  },
+  "scripts": {
+    "build": "pnpm engine:build && pnpm --filter open-video build",
+    "check": "pnpm typecheck && pnpm test && pnpm skill:validate",
+    "engine:build": "node packages/cli/scripts/build-engine.mjs",
+    "engine:test": "cd engine && go test ./...",
+    "eval": "node eval/run.mjs",
+    "open-video": "node packages/cli/dist/cli.js",
+    "skill:validate": "python3 scripts/validate-skill.py skills/watch",
+    "test": "pnpm engine:test && pnpm --filter open-video test",
+    "typecheck": "pnpm --filter open-video typecheck"
+  }
+}

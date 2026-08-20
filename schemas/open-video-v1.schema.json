@@ -1,0 +1,846 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "manifest": {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "type": "string",
+          "const": "open-video/v1"
+        },
+        "video_id": {
+          "type": "string"
+        },
+        "fingerprint": {
+          "type": "string"
+        },
+        "source": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "youtube",
+                "local"
+              ]
+            },
+            "value": {
+              "type": "string"
+            },
+            "canonical_url": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "type",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        "title": {
+          "type": "string"
+        },
+        "duration_ms": {
+          "type": "integer",
+          "exclusiveMinimum": 0,
+          "maximum": 9007199254740991
+        },
+        "language": {
+          "type": "string"
+        },
+        "subtitle_source": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+        },
+        "cli_version": {
+          "type": "string"
+        },
+        "engine_version": {
+          "type": "string"
+        },
+        "protocol_version": {
+          "type": "string"
+        },
+        "visual_model": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "revision": {
+              "type": "string"
+            },
+            "dtype": {
+              "type": "string"
+            },
+            "fingerprint": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "revision",
+            "dtype",
+            "fingerprint"
+          ],
+          "additionalProperties": false
+        },
+        "asr_model": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "revision": {
+              "type": "string"
+            },
+            "dtype": {
+              "type": "string"
+            },
+            "fingerprint": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "revision",
+            "dtype",
+            "fingerprint"
+          ],
+          "additionalProperties": false
+        },
+        "sampling": {
+          "type": "object",
+          "properties": {
+            "interval_ms": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "scene_threshold": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "max_gap_ms": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991
+            },
+            "long_edge_px": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991
+            }
+          },
+          "required": [
+            "interval_ms",
+            "scene_threshold",
+            "max_gap_ms",
+            "long_edge_px"
+          ],
+          "additionalProperties": false
+        },
+        "frame_count": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "timeline_count": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "warnings": {
+          "default": [],
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "schema_version",
+        "video_id",
+        "fingerprint",
+        "source",
+        "title",
+        "duration_ms",
+        "created_at",
+        "cli_version",
+        "engine_version",
+        "protocol_version",
+        "visual_model",
+        "sampling",
+        "frame_count",
+        "timeline_count",
+        "warnings"
+      ],
+      "additionalProperties": false
+    },
+    "timeline_entry": {
+      "type": "object",
+      "properties": {
+        "start_ms": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "end_ms": {
+          "type": "integer",
+          "exclusiveMinimum": 0,
+          "maximum": 9007199254740991
+        },
+        "subtitle": {
+          "type": "string"
+        },
+        "scene_ids": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          }
+        },
+        "frames": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "timestamp_ms": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "path": {
+                "type": "string"
+              },
+              "scene_id": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              }
+            },
+            "required": [
+              "id",
+              "timestamp_ms",
+              "path",
+              "scene_id"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": [
+        "start_ms",
+        "end_ms",
+        "subtitle",
+        "scene_ids",
+        "frames"
+      ],
+      "additionalProperties": false
+    },
+    "index_response": {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "type": "string",
+          "const": "open-video/v1"
+        },
+        "video_id": {
+          "type": "string"
+        },
+        "index_directory": {
+          "type": "string"
+        },
+        "reused": {
+          "type": "boolean"
+        },
+        "manifest": {
+          "type": "object",
+          "properties": {
+            "schema_version": {
+              "type": "string",
+              "const": "open-video/v1"
+            },
+            "video_id": {
+              "type": "string"
+            },
+            "fingerprint": {
+              "type": "string"
+            },
+            "source": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "youtube",
+                    "local"
+                  ]
+                },
+                "value": {
+                  "type": "string"
+                },
+                "canonical_url": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "type",
+                "value"
+              ],
+              "additionalProperties": false
+            },
+            "title": {
+              "type": "string"
+            },
+            "duration_ms": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991
+            },
+            "language": {
+              "type": "string"
+            },
+            "subtitle_source": {
+              "type": "string"
+            },
+            "created_at": {
+              "type": "string",
+              "format": "date-time",
+              "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+            },
+            "cli_version": {
+              "type": "string"
+            },
+            "engine_version": {
+              "type": "string"
+            },
+            "protocol_version": {
+              "type": "string"
+            },
+            "visual_model": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "revision": {
+                  "type": "string"
+                },
+                "dtype": {
+                  "type": "string"
+                },
+                "fingerprint": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "revision",
+                "dtype",
+                "fingerprint"
+              ],
+              "additionalProperties": false
+            },
+            "asr_model": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "revision": {
+                  "type": "string"
+                },
+                "dtype": {
+                  "type": "string"
+                },
+                "fingerprint": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "revision",
+                "dtype",
+                "fingerprint"
+              ],
+              "additionalProperties": false
+            },
+            "sampling": {
+              "type": "object",
+              "properties": {
+                "interval_ms": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "scene_threshold": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "max_gap_ms": {
+                  "type": "integer",
+                  "exclusiveMinimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "long_edge_px": {
+                  "type": "integer",
+                  "exclusiveMinimum": 0,
+                  "maximum": 9007199254740991
+                }
+              },
+              "required": [
+                "interval_ms",
+                "scene_threshold",
+                "max_gap_ms",
+                "long_edge_px"
+              ],
+              "additionalProperties": false
+            },
+            "frame_count": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "timeline_count": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "warnings": {
+              "default": [],
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "required": [
+            "schema_version",
+            "video_id",
+            "fingerprint",
+            "source",
+            "title",
+            "duration_ms",
+            "created_at",
+            "cli_version",
+            "engine_version",
+            "protocol_version",
+            "visual_model",
+            "sampling",
+            "frame_count",
+            "timeline_count",
+            "warnings"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "schema_version",
+        "video_id",
+        "index_directory",
+        "reused",
+        "manifest"
+      ],
+      "additionalProperties": false
+    },
+    "search_response": {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "type": "string",
+          "const": "open-video/v1"
+        },
+        "video_id": {
+          "type": "string"
+        },
+        "query": {
+          "type": "string"
+        },
+        "visual_query": {
+          "type": "string"
+        },
+        "mode": {
+          "type": "string",
+          "enum": [
+            "hybrid",
+            "visual",
+            "text"
+          ]
+        },
+        "hits": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "rank": {
+                "type": "integer",
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991
+              },
+              "score": {
+                "type": "number"
+              },
+              "match": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "visual",
+                    "text"
+                  ]
+                }
+              },
+              "start_ms": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "end_ms": {
+                "type": "integer",
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991
+              },
+              "timestamp_ms": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "subtitle": {
+                "type": "string"
+              },
+              "frames": {
+                "maxItems": 3,
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "timestamp_ms": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "path": {
+                      "type": "string"
+                    },
+                    "scene_id": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "timestamp_ms",
+                    "path",
+                    "scene_id"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "youtube_url": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "rank",
+              "score",
+              "match",
+              "start_ms",
+              "end_ms",
+              "timestamp_ms",
+              "subtitle",
+              "frames"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": [
+        "schema_version",
+        "video_id",
+        "query",
+        "mode",
+        "hits"
+      ],
+      "additionalProperties": false
+    },
+    "context_response": {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "type": "string",
+          "const": "open-video/v1"
+        },
+        "video_id": {
+          "type": "string"
+        },
+        "at_ms": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "start_ms": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "end_ms": {
+          "type": "integer",
+          "exclusiveMinimum": 0,
+          "maximum": 9007199254740991
+        },
+        "subtitle": {
+          "type": "string"
+        },
+        "frames": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "timestamp_ms": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "path": {
+                "type": "string"
+              },
+              "scene_id": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              }
+            },
+            "required": [
+              "id",
+              "timestamp_ms",
+              "path",
+              "scene_id"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "youtube_url": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "schema_version",
+        "video_id",
+        "at_ms",
+        "start_ms",
+        "end_ms",
+        "subtitle",
+        "frames"
+      ],
+      "additionalProperties": false
+    },
+    "timeline_response": {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "type": "string",
+          "const": "open-video/v1"
+        },
+        "video_id": {
+          "type": "string"
+        },
+        "chunk_ms": {
+          "type": "integer",
+          "exclusiveMinimum": 0,
+          "maximum": 9007199254740991
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "start_ms": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "end_ms": {
+                "type": "integer",
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991
+              },
+              "subtitle": {
+                "type": "string"
+              },
+              "frames": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "timestamp_ms": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "path": {
+                      "type": "string"
+                    },
+                    "scene_id": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "timestamp_ms",
+                    "path",
+                    "scene_id"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "required": [
+              "start_ms",
+              "end_ms",
+              "subtitle",
+              "frames"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "next_cursor": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "schema_version",
+        "video_id",
+        "chunk_ms",
+        "items",
+        "next_cursor"
+      ],
+      "additionalProperties": false
+    },
+    "doctor_response": {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "type": "string",
+          "const": "open-video/v1"
+        },
+        "ready": {
+          "type": "boolean"
+        },
+        "cli_version": {
+          "type": "string"
+        },
+        "engine_version": {
+          "type": "string"
+        },
+        "protocol_version": {
+          "type": "string"
+        },
+        "dependencies": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "path": {
+                "type": "string"
+              },
+              "version": {
+                "type": "string"
+              },
+              "available": {
+                "type": "boolean"
+              },
+              "supported": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "name",
+              "available",
+              "supported"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "assets": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "installed": {
+                "type": "boolean"
+              },
+              "path": {
+                "type": "string"
+              },
+              "version": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "name",
+              "installed"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": [
+        "schema_version",
+        "ready",
+        "cli_version",
+        "dependencies",
+        "assets"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "manifest",
+    "timeline_entry",
+    "index_response",
+    "search_response",
+    "context_response",
+    "timeline_response",
+    "doctor_response"
+  ],
+  "additionalProperties": false,
+  "$id": "https://open-video.dev/schema/open-video-v1.schema.json",
+  "title": "Open Video v1 public data contract"
+}

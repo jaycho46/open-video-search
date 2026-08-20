@@ -1,0 +1,6 @@
+interface:
+  display_name: "Watch"
+  short_description: "Search video moments with local timestamped evidence"
+  default_prompt: "Use $watch to inspect a video and answer with timestamped visual evidence."
+policy:
+  allow_implicit_invocation: false

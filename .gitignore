@@ -1,0 +1,17 @@
+node_modules/
+work/
+dist/
+coverage/
+.DS_Store
+*.log
+*.tmp
+*.part
+packages/cli/vendor/open-video-engine
+packages/engine-*/bin/
+packages/*/LICENSE
+packages/*/THIRD_PARTY_NOTICES.md
+test/fixtures/generated/
+release/*.tgz
+release/*.tar.gz
+release/SHA256SUMS
+release/*.spdx.json

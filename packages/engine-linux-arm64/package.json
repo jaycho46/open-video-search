@@ -1,0 +1,11 @@
+{
+  "name": "open-video-engine-linux-arm64",
+  "version": "0.1.0",
+  "description": "Open Video media engine for Linux arm64",
+  "license": "Apache-2.0",
+  "publishConfig": { "access": "public", "provenance": true },
+  "os": ["linux"],
+  "cpu": ["arm64"],
+  "bin": { "open-video-engine": "bin/open-video-engine" },
+  "files": ["bin", "LICENSE", "THIRD_PARTY_NOTICES.md"]
+}

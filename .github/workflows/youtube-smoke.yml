@@ -1,0 +1,43 @@
+name: YouTube smoke test
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 4 * * 1"
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    if: ${{ vars.OPEN_VIDEO_SMOKE_URL != '' }}
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.14.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.27.0"
+      - run: sudo apt-get update && sudo apt-get install -y ffmpeg
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/open-video/assets
+          key: open-video-assets-v0.1-${{ runner.os }}-${{ runner.arch }}
+      - name: Index one configured public video twice
+        env:
+          VIDEO_URL: ${{ vars.OPEN_VIDEO_SMOKE_URL }}
+        run: |
+          first="$(node packages/cli/dist/cli.js index "$VIDEO_URL" --json)"
+          second="$(node packages/cli/dist/cli.js index "$VIDEO_URL" --json)"
+          node -e 'const value=JSON.parse(process.argv[1]); if (!value.reused) process.exit(1)' "$second"
+          video_id="$(node -e 'console.log(JSON.parse(process.argv[1]).video_id)' "$first")"
+          node packages/cli/dist/cli.js search "$video_id" video --visual-query "a scene from the video" --mode hybrid --top 3 --json
+
