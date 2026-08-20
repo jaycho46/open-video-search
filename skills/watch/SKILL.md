@@ -33,17 +33,25 @@ Read [references/cli.md](references/cli.md) when exact flags, output fields, or 
 
 ### A person, object, outfit, vehicle, or event
 
-1. Derive the original-language subtitle query and three to five concise English visual descriptions. CLIP is English-centered, so translate or expand Korean visual wording rather than translating quoted speech.
-2. Begin with one hybrid search:
+1. Decide whether the question has one retrieval condition or several required conditions. Words such as "while", "when", "wearing", and "driving" usually combine an event, a subject, and an attribute.
+2. For one condition, derive the original-language subtitle query and a concise English visual description. CLIP is English-centered, so translate or expand visual wording rather than translating quoted speech.
+3. For several required conditions, split them into at most three independent anchors:
+   - event or action, such as eating fried seafood;
+   - subject or object, such as a woman at the table;
+   - attribute, such as dark oval sunglasses.
+   Treat a user-provided person's name as context, not as permission to perform face recognition.
+4. Search each anchor independently instead of putting every concept into one long CLIP prompt. Use original-language variants for subtitle anchors and one short English description for each visual anchor. A typical first search is:
 
    `open-video search <index> "<subtitle query>" --visual-query "<English visual description>" --mode hybrid --top 10 --json`
 
-3. If one modality is hiding useful evidence, repeat with `--mode visual` or `--mode text`.
-4. Call `open-video context <index> --at <timestamp_ms> --before 6s --after 6s --frames 5 --json` for at most three promising time ranges.
-5. Stop after three search rounds or 20 unique opened images. Report that evidence is insufficient instead of searching indefinitely.
+5. Group hits whose timestamps fall within 15 seconds of one another. Prefer a group only when every required anchor is supported by a hit or is directly visible in its context frames; a high score for one anchor does not satisfy the others.
+6. Call `open-video context <index> --at <timestamp_ms> --before 6s --after 6s --frames 5 --json` for at most three overlapping groups, then open the returned frames.
+7. If no group satisfies all required anchors, state which condition was found and which was not. Do not drift to a generic scene that contains only the requested person, object, or attribute.
+8. Stop after three search rounds or 20 unique opened images. Report that evidence is insufficient instead of searching indefinitely.
 
 ### Brand, model, year, and price questions
 
+- `open-video` is responsible only for retrieving the relevant time range, subtitles, and frames. Any identification is reasoning performed by you as the host model, not a claim produced by the search engine.
 - First gather multiple angles from the video. Look for silhouettes, materials, trims, logos, badges, dashboards, lights, wheels, and other discriminating details.
 - Classify identification as confirmed, likely, or unknown. State which visible details support or weaken it.
 - Treat current prices, catalog matches, and specifications as outside-video facts. Research them only if the host provides a web tool, cite current sources, and keep those findings separate from video observations.
