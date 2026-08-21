@@ -15,17 +15,18 @@ jobs:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 90
     steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
         with:
           version: 10.14.0
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: 24
           cache: pnpm
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v7
         with:
           go-version: "1.27.0"
+          cache: false
       - name: Install FFmpeg on Linux
         if: runner.os == 'Linux'
         run: sudo apt-get update && sudo apt-get install -y ffmpeg time
@@ -33,7 +34,7 @@ jobs:
         if: runner.os == 'macOS'
         run: brew list ffmpeg >/dev/null 2>&1 || brew install ffmpeg
       - run: pnpm install --frozen-lockfile && pnpm build
-      - uses: actions/cache@v4
+      - uses: actions/cache@v6
         with:
           path: ${{ runner.temp }}/open-video-cache/assets
           key: benchmark-assets-v0.1-${{ runner.os }}-${{ runner.arch }}
@@ -51,7 +52,7 @@ jobs:
             /usr/bin/time -l node packages/cli/dist/cli.js index "${RUNNER_TEMP}/fixture.mp4" --output "${RUNNER_TEMP}/index" --offline --json > "${RUNNER_TEMP}/reuse.json" 2> "${RUNNER_TEMP}/reuse.log"
           fi
           node -e 'const x=require(process.argv[1]); if (!x.reused) process.exit(1)' "${RUNNER_TEMP}/reuse.json"
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: benchmark-${{ runner.os }}-${{ runner.arch }}
           path: |
