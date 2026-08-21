@@ -332,6 +332,7 @@ pnpm eval -- \
 테스트에는 Go 파서·추출 단위 테스트, TypeScript 랭킹·토큰·스키마 테스트, 생성된 6초 영상으로 수행하는 실제 FFmpeg 및 Go 엔진 통합 테스트가 포함됩니다. 네트워크가 필요한 YouTube 테스트는 PR의 결정성을 유지하기 위해 수동 또는 예약 작업으로 분리합니다.
 
 기여 방법은 [`CONTRIBUTING.md`](CONTRIBUTING.md)를 참고하세요.
+릴리스 관리자는 버전·네이티브 바이너리·npm provenance·SBOM 검증 절차가 정리된 [`docs/releasing.md`](docs/releasing.md)를 따라야 합니다.
 
 ## 라이선스
 

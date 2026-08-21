@@ -24,3 +24,6 @@ Pull-request tests must not depend on public YouTube availability. Use generated
 
 Search-quality changes should include labelled examples and report Recall@5/10 against the evaluation set rather than relying only on anecdotes.
 
+## Releases
+
+Maintainers must follow [`docs/releasing.md`](docs/releasing.md). Do not publish directly from a workstation, move an existing release tag, or bypass the synchronized version and packed-artifact checks.

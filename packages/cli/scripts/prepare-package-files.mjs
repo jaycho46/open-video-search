@@ -19,3 +19,4 @@ for (const destination of packages) {
   );
 }
 
+await copyFile(path.join(repository, "SECURITY.md"), path.join(packageDirectory, "SECURITY.md"));

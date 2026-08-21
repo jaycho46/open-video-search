@@ -4,6 +4,14 @@
   "private": true,
   "description": "Local-first, open-source semantic search for moments inside videos.",
   "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jaycho46/open-video-search.git"
+  },
+  "homepage": "https://github.com/jaycho46/open-video-search#readme",
+  "bugs": {
+    "url": "https://github.com/jaycho46/open-video-search/issues"
+  },
   "packageManager": "pnpm@10.14.0",
   "engines": {
     "node": ">=22.12.0"
@@ -28,8 +36,11 @@
     "eval:prepare": "node eval/corpus-v1/prepare.mjs",
     "eval:validate": "node eval/validate-corpus.mjs eval/corpus-v1/corpus.json",
     "open-video": "node packages/cli/dist/cli.js",
+    "release:audit-packed": "node scripts/release/audit-packed-install.mjs",
+    "release:verify": "node scripts/release/verify-release.mjs",
     "skill:validate": "python3 scripts/validate-skill.py skills/watch",
-    "test": "pnpm engine:test && pnpm --filter open-video test && pnpm test:watch",
+    "test": "pnpm engine:test && pnpm --filter open-video test && pnpm test:watch && pnpm test:release",
+    "test:release": "node --test test/release/*.test.mjs",
     "test:watch": "node --test test/watch/compositional-evidence.test.mjs",
     "test:watch:live": "node test/watch/live.mjs",
     "typecheck": "pnpm --filter open-video typecheck"
