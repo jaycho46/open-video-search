@@ -32,7 +32,7 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y ffmpeg time
       - name: Install FFmpeg on macOS
         if: runner.os == 'macOS'
-        run: brew list ffmpeg >/dev/null 2>&1 || brew install ffmpeg
+        run: command -v ffmpeg >/dev/null 2>&1 || brew install ffmpeg
       - run: pnpm install --frozen-lockfile && pnpm build
       - uses: actions/cache@v6
         with:
