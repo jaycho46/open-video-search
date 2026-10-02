@@ -3,6 +3,15 @@
   "version": "0.1.0",
   "description": "Local-first semantic search for moments inside videos",
   "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jaycho46/open-video-search.git",
+    "directory": "packages/cli"
+  },
+  "homepage": "https://github.com/jaycho46/open-video-search#readme",
+  "bugs": {
+    "url": "https://github.com/jaycho46/open-video-search/issues"
+  },
   "keywords": [
     "video-search",
     "multimodal",
@@ -23,6 +32,7 @@
     "dist",
     "README.md",
     "LICENSE",
+    "SECURITY.md",
     "THIRD_PARTY_NOTICES.md"
   ],
   "publishConfig": {
@@ -32,10 +42,6 @@
   "engines": {
     "node": ">=22.12.0"
   },
-  "overrides": {
-    "adm-zip": "0.6.0",
-    "sharp": "0.35.3"
-  },
   "scripts": {
     "build": "node scripts/prepare-package-files.mjs && pnpm run clean && tsc -p tsconfig.json && node scripts/generate-schema.mjs && node scripts/generate-release-manifest.mjs",
     "clean": "node -e \"require('node:fs').rmSync('dist',{recursive:true,force:true})\"",
@@ -43,7 +49,7 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@huggingface/transformers": "~4.2.0",
+    "@huggingface/transformers": "~4.3.0",
     "commander": "^15.0.0",
     "minisearch": "^7.2.0",
     "zod": "^4.4.3"

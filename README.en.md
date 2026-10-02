@@ -332,6 +332,7 @@ pnpm eval -- \
 The test suite includes Go parser and extraction tests, TypeScript ranking, tokenization, and schema tests, plus a real FFmpeg and Go-engine integration test over a generated six-second video. Networked YouTube tests remain manual or scheduled so pull requests stay deterministic.
 
 Read [`CONTRIBUTING.md`](CONTRIBUTING.md) to contribute.
+Release maintainers must follow [`docs/releasing.md`](docs/releasing.md) for synchronized versions, native binaries, npm provenance, and SBOM verification.
 
 ## License
 

@@ -2,72 +2,230 @@ name: Release
 
 on:
   push:
-    tags: ["v*"]
+    tags:
+      - "v*"
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
 
 permissions:
-  contents: write
-  id-token: write
+  contents: read
 
 jobs:
-  release:
+  verify:
     runs-on: ubuntu-24.04
-    environment: npm
+    timeout-minutes: 30
+    outputs:
+      version: ${{ steps.metadata.outputs.version }}
+      npm_tag: ${{ steps.metadata.outputs.npm_tag }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Verify release tag and synchronized versions
+        id: metadata
+        run: node scripts/release/verify-release.mjs "$GITHUB_REF_NAME"
+      - name: Require the tagged commit to be on main
+        run: |
+          git fetch --no-tags origin main:refs/remotes/origin/main
+          git merge-base --is-ancestor "$GITHUB_SHA" origin/main
+      - uses: pnpm/action-setup@v6
         with:
           version: 10.14.0
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: 24
           cache: pnpm
-          registry-url: https://registry.npmjs.org
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v7
         with:
           go-version: "1.27.0"
+          cache: false
+      - name: Install FFmpeg
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg
       - run: pnpm install --frozen-lockfile
-      - run: pnpm audit --prod --audit-level high
-      - run: pnpm --filter open-video build
-      - name: Verify tag and package versions
+      - name: Run release checks
+        run: pnpm check
+      - name: Audit production dependencies
+        run: pnpm audit --prod --audit-level high
+      - name: Build generated release contracts
+        run: pnpm build
+      - name: Require committed generated contracts to be current
+        run: git diff --exit-code -- schemas/open-video-v1.schema.json release/asset-manifest.json
+
+  build-engine:
+    needs: verify
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - target: darwin-arm64
+            runner: macos-15
+          - target: darwin-x64
+            runner: macos-15-intel
+          - target: linux-arm64
+            runner: ubuntu-24.04-arm
+          - target: linux-x64
+            runner: ubuntu-24.04
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+      - uses: actions/setup-go@v7
+        with:
+          go-version: "1.27.0"
+          cache: false
+      - name: Build and execute the native engine
+        env:
+          RELEASE_VERSION: ${{ needs.verify.outputs.version }}
+          TARGET: ${{ matrix.target }}
         run: |
-          test "${GITHUB_REF_NAME#v}" = "$(node -p "require('./packages/cli/package.json').version")"
-          for package in packages/engine-*; do
-            test "${GITHUB_REF_NAME#v}" = "$(node -p "require('./' + process.argv[1] + '/package.json').version" "$package")"
-          done
-      - name: Build four native engine packages
+          destination="packages/engine-${TARGET}/bin/open-video-engine"
+          mkdir -p "$(dirname "$destination")"
+          (
+            cd engine
+            CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o "../${destination}" ./cmd/open-video-engine
+          )
+          chmod 0755 "$destination"
+          version_event="$("$destination" version)"
+          node -e '
+            const event = JSON.parse(process.argv[1]);
+            if (event.type !== "result") process.exit(1);
+            if (event.data.engine_version !== process.env.RELEASE_VERSION) process.exit(1);
+            if (event.data.protocol_version !== "1") process.exit(1);
+          ' "$version_event"
+          tar -czf "open-video-engine-${TARGET}.tar.gz" -C "packages/engine-${TARGET}" bin/open-video-engine
+      - uses: actions/upload-artifact@v7
+        with:
+          name: engine-${{ matrix.target }}
+          path: open-video-engine-${{ matrix.target }}.tar.gz
+          if-no-files-found: error
+          retention-days: 14
+
+  package:
+    needs: [verify, build-engine]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 10.14.0
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: pnpm
+      - name: Use the audited npm release toolchain
+        run: npm install --global npm@11.15.0
+      - uses: actions/setup-go@v7
+        with:
+          go-version: "1.27.0"
+          cache: false
+      - run: pnpm install --frozen-lockfile
+      - uses: actions/download-artifact@v8
+        with:
+          pattern: engine-*
+          path: ${{ runner.temp }}/native-engines
+          merge-multiple: true
+      - name: Restore native engines into their npm packages
         run: |
-          mkdir -p artifacts
           for target in darwin-arm64 darwin-x64 linux-arm64 linux-x64; do
-            os="${target%-*}"
-            arch="${target#*-}"
-            destination="packages/engine-${target}/bin/open-video-engine"
-            mkdir -p "$(dirname "$destination")"
-            (cd engine && CGO_ENABLED=0 GOOS="$os" GOARCH="$arch" go build -trimpath -ldflags="-s -w" -o "../$destination" ./cmd/open-video-engine)
-            tar -czf "artifacts/open-video-engine-${target}.tar.gz" -C "packages/engine-${target}" bin/open-video-engine
+            archive="$RUNNER_TEMP/native-engines/open-video-engine-${target}.tar.gz"
+            test -f "$archive"
+            mkdir -p "packages/engine-${target}"
+            tar -xzf "$archive" -C "packages/engine-${target}"
+            test -x "packages/engine-${target}/bin/open-video-engine"
           done
-          sha256sum artifacts/*.tar.gz > artifacts/SHA256SUMS
-          cp release/asset-manifest.json artifacts/asset-manifest.json
-      - uses: anchore/sbom-action/download-syft@v0
-      - name: Generate SPDX SBOM
-        run: syft dir:. -o spdx-json=artifacts/open-video.spdx.json
-      - name: Audit the exact packed npm install
+      - name: Build the public CLI package
+        run: pnpm --filter open-video build
+      - name: Pack the exact npm release artifacts
+        env:
+          RELEASE_VERSION: ${{ needs.verify.outputs.version }}
         run: |
-          mkdir -p "$RUNNER_TEMP/npm-audit-packs"
-          pnpm --filter open-video pack --pack-destination "$RUNNER_TEMP/npm-audit-packs"
-          pnpm --filter open-video-engine-linux-x64 pack --pack-destination "$RUNNER_TEMP/npm-audit-packs"
-          audit_directory="$(mktemp -d)"
+          release_directory="$RUNNER_TEMP/release"
+          mkdir -p "$release_directory"
+          for package_name in open-video-engine-darwin-arm64 open-video-engine-darwin-x64 open-video-engine-linux-arm64 open-video-engine-linux-x64 open-video; do
+            pnpm --filter "$package_name" pack --pack-destination "$release_directory"
+          done
+          node scripts/release/verify-package-tarballs.mjs "$release_directory" "$RELEASE_VERSION"
+      - name: Audit and execute the exact packed Linux install
+        env:
+          RELEASE_VERSION: ${{ needs.verify.outputs.version }}
+        run: |
+          release_directory="$RUNNER_TEMP/release"
+          audit_directory="$RUNNER_TEMP/packed-install"
+          mkdir -p "$audit_directory"
           cd "$audit_directory"
           npm init -y >/dev/null
-          npm install \
-            "$RUNNER_TEMP/npm-audit-packs/open-video-${GITHUB_REF_NAME#v}.tgz" \
-            "$RUNNER_TEMP/npm-audit-packs/open-video-engine-linux-x64-${GITHUB_REF_NAME#v}.tgz"
-          npm audit --omit=dev --audit-level high
-      - name: Publish npm packages with matching versions
-        run: pnpm -r --filter "./packages/**" publish --access public --no-git-checks
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-          NPM_CONFIG_PROVENANCE: "true"
-      - uses: softprops/action-gh-release@v2
+          npm install "$release_directory/open-video-${RELEASE_VERSION}.tgz" "$release_directory/open-video-engine-linux-x64-${RELEASE_VERSION}.tgz"
+          node "$GITHUB_WORKSPACE/scripts/release/audit-packed-install.mjs" "$audit_directory"
+          test "$(./node_modules/.bin/open-video --version)" = "$RELEASE_VERSION"
+          version_event="$(./node_modules/.bin/open-video-engine version)"
+          node -e '
+            const event = JSON.parse(process.argv[1]);
+            if (event.data.engine_version !== process.env.RELEASE_VERSION) process.exit(1);
+            if (event.data.protocol_version !== "1") process.exit(1);
+          ' "$version_event"
+      - uses: anchore/sbom-action/download-syft@e22c389904149dbc22b58101806040fa8d37a610
+      - name: Assemble checksums, manifest, and SPDX SBOM
+        run: |
+          release_directory="$RUNNER_TEMP/release"
+          cp "$RUNNER_TEMP"/native-engines/*.tar.gz "$release_directory/"
+          cp release/asset-manifest.json "$release_directory/asset-manifest.json"
+          cp SECURITY.md "$release_directory/SECURITY.md"
+          syft "dir:$RUNNER_TEMP/packed-install" -o "spdx-json=$release_directory/open-video.spdx.json"
+          (
+            cd "$release_directory"
+            find . -maxdepth 1 -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS
+            sha256sum -c SHA256SUMS
+          )
+      - uses: actions/upload-artifact@v7
         with:
-          generate_release_notes: true
-          files: artifacts/*
+          name: release-bundle
+          path: ${{ runner.temp }}/release/*
+          if-no-files-found: error
+          retention-days: 30
+
+  publish:
+    needs: [verify, package]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    environment: npm
+    permissions:
+      contents: write
+      id-token: write
+    env:
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      NPM_CONFIG_PROVENANCE: "true"
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+      - name: Install an npm version with trusted publishing support
+        run: npm install --global npm@11.15.0
+      - uses: actions/download-artifact@v8
+        with:
+          name: release-bundle
+          path: ${{ runner.temp }}/release
+      - name: Verify downloaded release artifacts
+        run: |
+          cd "$RUNNER_TEMP/release"
+          sha256sum -c SHA256SUMS
+      - name: Configure the first-release npm token when present
+        if: env.NPM_TOKEN != ''
+        run: npm config set --location=user //registry.npmjs.org/:_authToken "$NPM_TOKEN"
+      - name: Publish immutable npm packages
+        env:
+          RELEASE_VERSION: ${{ needs.verify.outputs.version }}
+          NPM_TAG: ${{ needs.verify.outputs.npm_tag }}
+        run: |
+          node scripts/release/publish-packages.mjs "$RUNNER_TEMP/release" "$RELEASE_VERSION" "$NPM_TAG"
+      - name: Create or repair the GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          node scripts/release/publish-github-release.mjs "$RUNNER_TEMP/release" "$GITHUB_REF_NAME"

@@ -8,32 +8,44 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   test:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-24.04, ubuntu-24.04-arm, macos-14, macos-14-arm64]
+        os: [ubuntu-24.04, ubuntu-24.04-arm, macos-15, macos-15-intel]
         node: [22.12.0, 24]
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
         with:
           version: 10.14.0
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: ${{ matrix.node }}
           cache: pnpm
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v7
         with:
           go-version: "1.27.0"
+          cache: false
       - name: Install FFmpeg on Linux
         if: runner.os == 'Linux'
         run: sudo apt-get update && sudo apt-get install -y ffmpeg
       - name: Install FFmpeg on macOS
         if: runner.os == 'macOS'
-        run: brew list ffmpeg >/dev/null 2>&1 || brew install ffmpeg
+        run: |
+          if ! command -v ffmpeg >/dev/null 2>&1; then
+            if brew tap | grep -Fxq "aws/tap"; then
+              brew untap aws/tap
+            fi
+            brew install ffmpeg
+          fi
       - run: pnpm install --frozen-lockfile
       - run: pnpm check
       - run: pnpm audit --prod --audit-level high
@@ -41,18 +53,56 @@ jobs:
 
   package-contract:
     runs-on: ubuntu-24.04
+    timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
         with:
           version: 10.14.0
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: 24
           cache: pnpm
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v7
         with:
           go-version: "1.27.0"
+          cache: false
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
-      - run: pnpm --filter open-video pack --pack-destination release
+      - name: Build all engine package contracts
+        run: |
+          for target in darwin-arm64 darwin-x64 linux-arm64 linux-x64; do
+            os="${target%-*}"
+            arch="${target#*-}"
+            if [ "$arch" = "x64" ]; then
+              go_arch="amd64"
+            else
+              go_arch="$arch"
+            fi
+            destination="packages/engine-${target}/bin/open-video-engine"
+            mkdir -p "$(dirname "$destination")"
+            (
+              cd engine
+              CGO_ENABLED=0 GOOS="$os" GOARCH="$go_arch" go build -trimpath -ldflags="-s -w" -o "../${destination}" ./cmd/open-video-engine
+            )
+            chmod 0755 "$destination"
+          done
+      - name: Pack and verify all npm artifacts
+        run: |
+          version="$(node -p "require('./packages/cli/package.json').version")"
+          release_directory="$RUNNER_TEMP/package-contract"
+          mkdir -p "$release_directory"
+          for package_name in open-video-engine-darwin-arm64 open-video-engine-darwin-x64 open-video-engine-linux-arm64 open-video-engine-linux-x64 open-video; do
+            pnpm --filter "$package_name" pack --pack-destination "$release_directory"
+          done
+          node scripts/release/verify-package-tarballs.mjs "$release_directory" "$version"
+      - name: Audit a clean consumer install without workspace overrides
+        run: |
+          version="$(node -p "require('./packages/cli/package.json').version")"
+          release_directory="$RUNNER_TEMP/package-contract"
+          audit_directory="$(mktemp -d "$RUNNER_TEMP/open-video-consumer.XXXXXX")"
+          cd "$audit_directory"
+          npm init -y >/dev/null
+          npm install "$release_directory/open-video-${version}.tgz" "$release_directory/open-video-engine-linux-x64-${version}.tgz"
+          node "$GITHUB_WORKSPACE/scripts/release/audit-packed-install.mjs" "$audit_directory"
+          test "$(./node_modules/.bin/open-video --version)" = "$version"
