@@ -8,14 +8,14 @@ Open Video is a local CLI, not a network service. It does not accept remote requ
 
 CI runs `pnpm audit --prod --audit-level high`. The workspace currently overrides two transitive packages to patched versions:
 
-- `sharp` `0.35.3`, replacing Transformers.js 4.2.0's `^0.34.5` request;
-- `adm-zip` `0.6.0`, replacing ONNX Runtime Node 1.24.3's `^0.5.16` request.
+- `sharp` `0.35.5`, within Transformers.js 4.3.0's `^0.35.4` request;
+- `adm-zip` `0.6.1`, within ONNX Runtime Node 1.30.0's `^0.6.0` request.
 
-The patched Sharp basic JPEG-to-raw API used by Transformers.js has been exercised by real CLIP indexing/search tests. `adm-zip` is used by ONNX Runtime's package installation path and Open Video never accepts ZIP input.
+Sharp decodes the frames used by Transformers.js. `adm-zip` is used by ONNX Runtime's package installation path and Open Video never accepts ZIP input.
 
-npm only applies `overrides` from the installation project's root. As a result, an npm project that installs the packed CLI as a dependency can still resolve `sharp@0.34.5` and `adm-zip@0.5.18` until the upstream dependency ranges are widened, and npm audit will report the corresponding 2026 high-severity advisories.
+npm only applies `overrides` from the installation project's root; workspace overrides do not protect downstream installations. The published CLI therefore requires Transformers.js 4.3.x, whose upstream dependency ranges allow the patched Sharp and adm-zip releases. Both PR CI and the release workflow separately install the exact CLI and engine tarballs in a clean npm project without overrides and audit that resolved dependency tree. Existing installations should refresh their lockfile and audit their own resolved dependencies.
 
-The release audit permits only `GHSA-f88m-g3jw-g9cj` and `GHSA-xcpc-8h2w-3j85`, only through Transformers.js `4.2.0`, ONNX Runtime Node `1.24.3`, Sharp `0.34.5`, and adm-zip `0.5.18`. A new advisory, dependency version, affected package, severity change, or critical finding fails the release. The policy is shipped beside an SBOM of the exact packed install and summarized in every GitHub Release. Update the upstream dependencies as soon as compatible patched ranges are published; do not silently add or broaden exceptions.
+The packed-install release audit requires zero reported vulnerabilities at every severity. There are no advisory exceptions, including the previously allowed `GHSA-f88m-g3jw-g9cj` and `GHSA-xcpc-8h2w-3j85`. An unavailable, malformed, or failing audit blocks publication. The policy is shipped beside an SBOM of the exact packed install and summarized in every GitHub Release. Audits describe the advisories known at release time, not a guarantee against future vulnerabilities.
 
 ## Model and executable integrity
 

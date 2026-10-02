@@ -3,78 +3,55 @@ import test from "node:test";
 
 import { verifyPackedAuditReport } from "../../scripts/release/audit-packed-install.mjs";
 
-const reviewedVersions = {
-  "@huggingface/transformers": "4.2.0",
-  "adm-zip": "0.5.18",
-  "onnxruntime-node": "1.24.3",
-  sharp: "0.34.5",
-};
-
-function reviewedReport() {
+function cleanReport() {
   return {
     auditReportVersion: 2,
-    vulnerabilities: {
-      "@huggingface/transformers": {
-        name: "@huggingface/transformers",
-        severity: "high",
-        via: ["onnxruntime-node", "sharp"],
-      },
-      "adm-zip": {
-        name: "adm-zip",
-        severity: "high",
-        via: [{ url: "https://github.com/advisories/GHSA-xcpc-8h2w-3j85" }],
-      },
-      "onnxruntime-node": { name: "onnxruntime-node", severity: "high", via: ["adm-zip"] },
-      "open-video": {
-        name: "open-video",
-        severity: "high",
-        via: ["@huggingface/transformers"],
-      },
-      sharp: {
-        name: "sharp",
-        severity: "high",
-        via: [{ url: "https://github.com/advisories/GHSA-f88m-g3jw-g9cj" }],
-      },
-    },
-    metadata: { vulnerabilities: { critical: 0 } },
+    vulnerabilities: {},
+    metadata: { vulnerabilities: { info: 0, low: 0, moderate: 0, high: 0, critical: 0, total: 0 } },
   };
 }
 
-test("accepts only the reviewed packed-install advisories", () => {
-  assert.deepEqual(verifyPackedAuditReport(reviewedReport(), reviewedVersions), {
-    status: "bounded_exception",
-    advisories: [
-      "https://github.com/advisories/GHSA-f88m-g3jw-g9cj",
-      "https://github.com/advisories/GHSA-xcpc-8h2w-3j85",
-    ],
+test("accepts a complete clean packed-install audit", () => {
+  assert.deepEqual(verifyPackedAuditReport(cleanReport()), { status: "clean", advisories: [] });
+});
+
+for (const severity of ["low", "moderate", "high", "critical"]) {
+  test(`rejects ${severity} vulnerabilities without advisory exceptions`, () => {
+    const report = cleanReport();
+    report.vulnerabilities.sharp = {
+      name: "sharp", severity,
+      via: [{ url: "https://github.com/advisories/GHSA-f88m-g3jw-g9cj" }],
+    };
+    report.metadata.vulnerabilities[severity] = 1;
+    report.metadata.vulnerabilities.total = 1;
+    assert.throws(() => verifyPackedAuditReport(report), /No advisory exceptions are permitted/u);
   });
+}
+
+test("rejects nonzero counts even if the vulnerability map is empty", () => {
+  const report = cleanReport();
+  report.metadata.vulnerabilities.high = 1;
+  assert.throws(() => verifyPackedAuditReport(report), /contains vulnerabilities/u);
 });
 
-test("accepts a clean packed install", () => {
-  assert.deepEqual(
-    verifyPackedAuditReport({ auditReportVersion: 2, vulnerabilities: {} }, reviewedVersions),
-    { status: "clean", advisories: [] },
-  );
+test("rejects listed vulnerabilities even if the counts are zero", () => {
+  const report = cleanReport();
+  report.vulnerabilities["adm-zip"] = { name: "adm-zip", severity: "high" };
+  assert.throws(() => verifyPackedAuditReport(report), /contains vulnerabilities/u);
 });
 
-test("rejects a new advisory even when it affects a reviewed package", () => {
-  const report = reviewedReport();
-  report.vulnerabilities.sharp.via.push({
-    url: "https://github.com/advisories/GHSA-new-advisory",
-  });
-  assert.throws(
-    () => verifyPackedAuditReport(report, reviewedVersions),
-    /Packed-install advisory set changed/u,
-  );
-});
-
-test("rejects an unreviewed transitive version", () => {
-  assert.throws(
-    () =>
-      verifyPackedAuditReport(reviewedReport(), {
-        ...reviewedVersions,
-        sharp: "0.34.6",
-      }),
-    /sharp changed from the reviewed 0\.34\.5/u,
-  );
+test("rejects missing or malformed audit fields instead of treating them as clean", () => {
+  for (const report of [null, {}, { ...cleanReport(), auditReportVersion: 1 }]) {
+    assert.throws(() => verifyPackedAuditReport(report), /Unsupported npm audit report/u);
+  }
+  for (const vulnerabilities of [undefined, null, [], ""]) {
+    assert.throws(() => verifyPackedAuditReport({ ...cleanReport(), vulnerabilities }), /vulnerability map/u);
+  }
+  assert.throws(() => verifyPackedAuditReport({ ...cleanReport(), metadata: {} }), /vulnerability count/u);
+  for (const count of [-1, "0", 0.5, undefined]) {
+    const report = cleanReport();
+    report.metadata.vulnerabilities.total = count;
+    assert.throws(() => verifyPackedAuditReport(report), /valid total vulnerability count/u);
+  }
+  assert.throws(() => verifyPackedAuditReport({ ...cleanReport(), error: { code: "E503" } }), /error report/u);
 });

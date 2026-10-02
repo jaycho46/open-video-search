@@ -88,7 +88,7 @@ The release pipeline has four permission-separated stages:
 
 1. **Verify** — checks the tag, all package/runtime versions, generated contracts, tests, build, and dependency audit.
 2. **Build engines** — builds and executes the Go engine natively on macOS arm64, macOS x64, Linux arm64, and Linux x64 runners.
-3. **Package** — creates the exact five npm tarballs, verifies their files and platform metadata, installs and audits the packed Linux release, and generates native archives, SHA-256 checksums, an asset manifest, the security policy, and an SPDX JSON SBOM of that exact packed install. The packed audit accepts only the exact reviewed upstream advisories documented in `SECURITY.md`; any new finding or transitive-version drift fails the release.
+3. **Package** — creates the exact five npm tarballs, verifies their files and platform metadata, installs and audits the packed Linux release, and generates native archives, SHA-256 checksums, an asset manifest, the security policy, and an SPDX JSON SBOM of that exact packed install. The packed audit requires zero reported vulnerabilities, with no advisory exceptions; a failed or malformed audit blocks the release.
 4. **Publish** — verifies the downloaded bundle, publishes engine packages before the CLI, then creates or repairs the GitHub Release.
 
 Only the final `publish` job can request an npm OIDC token or write repository releases. Build and verification jobs have read-only repository access.

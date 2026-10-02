@@ -96,3 +96,13 @@ jobs:
             pnpm --filter "$package_name" pack --pack-destination "$release_directory"
           done
           node scripts/release/verify-package-tarballs.mjs "$release_directory" "$version"
+      - name: Audit a clean consumer install without workspace overrides
+        run: |
+          version="$(node -p "require('./packages/cli/package.json').version")"
+          release_directory="$RUNNER_TEMP/package-contract"
+          audit_directory="$(mktemp -d "$RUNNER_TEMP/open-video-consumer.XXXXXX")"
+          cd "$audit_directory"
+          npm init -y >/dev/null
+          npm install "$release_directory/open-video-${version}.tgz" "$release_directory/open-video-engine-linux-x64-${version}.tgz"
+          node "$GITHUB_WORKSPACE/scripts/release/audit-packed-install.mjs" "$audit_directory"
+          test "$(./node_modules/.bin/open-video --version)" = "$version"

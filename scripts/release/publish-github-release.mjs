@@ -5,7 +5,7 @@ import { fileURLToPath } from "node:url";
 
 import { parseReleaseTag } from "./verify-release.mjs";
 
-const securityNote = "Security note: the packed npm install is gated to two reviewed upstream advisories with no compatible upstream fix. See the attached SECURITY.md and repository security policy for exact versions, scope, and mitigations.";
+const securityNote = "Security note: the exact packed npm install passed the release dependency audit with no reported vulnerabilities and no advisory exceptions. See the attached SECURITY.md and SPDX SBOM for the policy and audited dependency inventory.";
 
 function gh(args, { allowMissing = false } = {}) {
   const result = spawnSync("gh", args, { encoding: "utf8" });

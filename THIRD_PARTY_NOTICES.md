@@ -6,7 +6,7 @@ Open Video source code is Apache-2.0. It invokes or downloads the following inde
 
 | Component | Version/pin | License | Distribution |
 | --- | --- | --- | --- |
-| Transformers.js | 4.2.x | Apache-2.0 | npm dependency |
+| Transformers.js | 4.3.x | Apache-2.0 | npm dependency |
 | Commander.js | 15.x | MIT | npm dependency |
 | MiniSearch | 7.2.x | MIT | npm dependency |
 | Zod | 4.x | MIT | npm dependency |
