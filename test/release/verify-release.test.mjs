@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { execFileSync } from "node:child_process";
 import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
@@ -8,6 +9,16 @@ import { fileURLToPath } from "node:url";
 import { parseReleaseTag, verifyRelease } from "../../scripts/release/verify-release.mjs";
 
 const repository = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
+
+test("the documented pnpm release verification command succeeds", async () => {
+  const documentation = await readFile(path.join(repository, "docs/releasing.md"), "utf8");
+  const command = /^pnpm release:verify (.+)$/mu.exec(documentation);
+  assert.ok(command, "expected a release verification command in the release guide");
+  const rootPackage = JSON.parse(await readFile(path.join(repository, "package.json"), "utf8"));
+  const args = command[1].trim().split(/\s+/u);
+  args[args.length - 1] = `v${rootPackage.version}`;
+  execFileSync("pnpm", ["release:verify", ...args], { cwd: repository, stdio: "pipe" });
+});
 
 test("parses stable and prerelease tags", () => {
   assert.deepEqual(parseReleaseTag("v1.2.3"), { version: "1.2.3", npmTag: "latest" });

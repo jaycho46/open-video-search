@@ -61,13 +61,13 @@ Then regenerate and validate the public contracts:
 
 ```bash
 pnpm install --frozen-lockfile
-pnpm check
 pnpm build
-pnpm release:verify -- v0.1.0
-git diff --exit-code -- schemas/open-video-v1.schema.json release/asset-manifest.json
+pnpm check
+pnpm release:verify v0.1.0
+git diff -- schemas/open-video-v1.schema.json release/asset-manifest.json
 ```
 
-Replace `v0.1.0` with the intended tag. Commit generated contract changes with the version update. Wait for the complete `CI` workflow on `main` to pass before tagging.
+Replace `v0.1.0` with the intended tag. Build before running checks so the generated release manifest reflects the new version. Review and commit generated contract changes with the version update. After committing, rebuild and run `git diff --exit-code -- schemas/open-video-v1.schema.json release/asset-manifest.json` to confirm reproducibility. Wait for the complete `CI` workflow on `main` to pass before tagging.
 
 ## Publish a release
 
@@ -80,7 +80,7 @@ git tag -a v0.1.0 -m "Open Video v0.1.0"
 git push origin v0.1.0
 ```
 
-Never move or force-push a release tag. Stable versions publish to npm's `latest` tag. Semantic prereleases such as `v0.2.0-beta.1` publish to `next`.
+Never move or force-push a release tag. Stable versions publish to npm's `latest` tag. Semantic prereleases such as `v0.2.0-beta.1` publish to `next` and are marked as prereleases, never Latest, on GitHub.
 
 ## What the workflow verifies
 
@@ -97,6 +97,6 @@ Only the final `publish` job can request an npm OIDC token or write repository r
 
 npm versions are immutable. Never delete and republish a version or move its Git tag.
 
-The publish script skips an exact package version that already exists, so rerunning the same GitHub Actions run can finish a release that stopped after publishing only some packages. The GitHub Release step also uploads missing assets or replaces incomplete assets when the release already exists.
+The publish script skips an exact package version that already exists, so rerunning the same GitHub Actions run can finish a release that stopped after publishing only some packages. The GitHub Release step also uploads missing assets or replaces incomplete assets when the release already exists. If an interrupted run left a draft, it publishes that draft only after all uploads succeed, then verifies the release is public and has the correct prerelease status.
 
 If published contents are wrong, deprecate the affected version on npm, fix the repository, and publish a new patch version.
