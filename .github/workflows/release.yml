@@ -227,10 +227,5 @@ jobs:
       - name: Create or repair the GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
-          RELEASE_VERSION: ${{ needs.verify.outputs.version }}
         run: |
-          if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
-            gh release upload "$GITHUB_REF_NAME" "$RUNNER_TEMP"/release/* --clobber
-          else
-            gh release create "$GITHUB_REF_NAME" "$RUNNER_TEMP"/release/* --verify-tag --generate-notes --title "Open Video ${RELEASE_VERSION}" --notes "Security note: the packed npm install is gated to two reviewed upstream advisories with no compatible upstream fix. See the attached SECURITY.md and repository security policy for exact versions, scope, and mitigations."
-          fi
+          node scripts/release/publish-github-release.mjs "$RUNNER_TEMP/release" "$GITHUB_REF_NAME"
