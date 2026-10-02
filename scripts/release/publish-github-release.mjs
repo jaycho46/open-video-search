@@ -30,30 +30,32 @@ function readRelease(runGh, tag, allowMissing = false) {
 }
 
 export async function publishGitHubRelease(directory, tag, { runGh = gh } = {}) {
-  const { version } = parseReleaseTag(tag);
+  const { version, npmTag } = parseReleaseTag(tag);
+  const prerelease = npmTag === "next";
   const assets = (await readdir(directory, { withFileTypes: true }))
     .filter((entry) => entry.isFile())
     .map((entry) => path.resolve(directory, entry.name))
     .sort();
   if (assets.length === 0) throw new Error("The verified release bundle is empty.");
 
+  const flags = [`--prerelease=${prerelease}`, ...(prerelease ? ["--latest=false"] : [])];
   const existing = readRelease(runGh, tag, true);
   if (existing) {
     runGh(["release", "upload", tag, ...assets, "--clobber"]);
-    if (existing.isDraft) {
+    if (existing.isDraft || existing.isPrerelease !== prerelease) {
       // Do not expose a recovered draft until every asset upload succeeds.
-      runGh(["release", "edit", tag, "--draft=false", "--verify-tag"]);
+      runGh(["release", "edit", tag, "--draft=false", "--verify-tag", ...flags]);
     }
   } else {
     runGh([
       "release", "create", tag, ...assets,
       "--verify-tag", "--generate-notes", "--title", `Open Video ${version}`,
-      "--notes", securityNote,
+      "--notes", securityNote, ...flags,
     ]);
   }
 
   const release = readRelease(runGh, tag);
-  if (release.isDraft) {
+  if (release.isDraft || release.isPrerelease !== prerelease) {
     throw new Error(`GitHub Release ${tag} did not reach the expected published state.`);
   }
   return release;
